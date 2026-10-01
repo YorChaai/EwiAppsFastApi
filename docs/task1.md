@@ -1,0 +1,42 @@
+# Daftar Tugas: Refactoring Codebase Skala Besar
+
+- `[ ]` **Fase 1: Pembongkaran "God Object" (Frontend)**
+  - `[ ]` **Tahap 1.1: Layar Laporan Tahunan (Annual Report)**
+    - `[ ]` Refactor `annual_report_screen.dart` (Parent) - ubah variabel private ke public, hapus `part`
+    - `[ ]` Refactor `annual_report_tables.dart` (Child) - hapus `part of`, tambahkan import standar
+    - `[ ]` Refactor `widget_table_card.dart` (Child) - hapus `part of`, tambahkan import standar
+    - `[ ]` Selesaikan error dependensi dan verifikasi UI Annual Report
+  - `[ ]` **Tahap 1.2: Layar Advances (Kasbon)**
+    - `[ ]` Refactor `advance_detail_screen.dart` (Parent)
+    - `[ ]` Refactor `advances_screen.dart` (Parent)
+    - `[ ]` Refactor `advance_detail_tables.dart` (Child)
+    - `[ ]` Refactor `dialog_add_item.dart` (Child)
+    - `[ ]` Refactor `advance_detail_actions.dart` (Child)
+    - `[ ]` Selesaikan error dependensi dan verifikasi UI Layar Advances
+  - `[ ]` **Tahap 1.3: Layar Manajemen**
+    - `[ ]` Refactor `revenue_management_screen.dart` & `revenue_management_screen_actions.dart`
+    - `[ ]` Refactor `tax_management_screen.dart` & `tax_management_screen_actions.dart`
+    - `[ ]` Refactor `category_tabular_screen.dart`
+    - `[ ]` Selesaikan error dependensi Layar Manajemen
+  - `[ ]` **Tahap 1.4: Modul Inti & Autentikasi**
+    - `[ ]` Refactor `api_advances.dart` (Child)
+    - `[ ]` Refactor `login_screen.dart` (Parent)
+    - `[ ]` Refactor `settings_screen.dart` (Parent)
+
+- `[ ]` **Fase 2: Pemecahan File Besar Tanpa `part of` (Frontend)**
+  - `[ ]` Pecah UI `settlement_detail_layout.dart` menjadi komponen terpisah
+  - `[ ]` Ekstrak logika/widget `settlement_detail_actions.dart`
+  - `[ ]` Refactor `asset_management_screen.dart`
+  - `[ ]` Refactor `account_list_dialog.dart`
+  - `[ ]` Refactor `dialog_add_expense.dart` & `dialog_edit_expense.dart`
+  - `[ ]` Pecah `main_layout_settlement_list.dart`
+  - `[ ]` Ekstrak komponen dari `sidebar.dart`
+  - `[ ]` Refactor `manager_settlement_detail_screen.dart`
+
+- `[ ]` **Fase 3: Refactoring Backend (Python)**
+  - `[ ]` Pindahkan *business logic* dari `backend/models/transaction.py` ke services
+  - `[ ]` Refactor `backend/services/settlement_approval_service.py`
+  - `[ ]` Konsolidasi helper: `backend/routes/reports/helpers.py` & `backend/services/reports/annual_service/helpers.py`
+  - `[ ]` Perampingan `backend/services/reports/table_builder/expense_renderer.py`
+  - `[ ]` Refactor `backend/services/advance_approval_service.py`
+  - `[ ]` Perampingan `backend/routes/advances_items.py`

@@ -1,0 +1,32 @@
+                              DataCell(
+                                Text(
+                                  (double.tryParse(e['ppn']?.toString() ?? '0') ?? 0) > 0
+                                      ? (e['ppn_base']?.toString() ?? e['transaction_value']?.toString() ?? '0')
+                                      : '0',
+                                ),
+                              ),
+                              DataCell(Text('${e['ppn'] ?? 0}')),
+                              DataCell(
+                                Text(
+                                  (double.tryParse(e['pph_21']?.toString() ?? e['pph_2_1']?.toString() ?? '0') ?? 0) > 0
+                                      ? (e['pph_21_base']?.toString() ?? e['transaction_value']?.toString() ?? '0')
+                                      : '0',
+                                ),
+                              ),
+                              DataCell(Text('${e['pph_21'] ?? e['pph_2_1'] ?? 0}')),
+                              DataCell(
+                                Text(
+                                  (double.tryParse(e['pph_23']?.toString() ?? '0') ?? 0) > 0
+                                      ? (e['pph_23_base']?.toString() ?? e['transaction_value']?.toString() ?? '0')
+                                      : '0',
+                                ),
+                              ),
+                              DataCell(Text('${e['pph_23'] ?? 0}')),
+                              DataCell(
+                                Text(
+                                  (double.tryParse(e['pph_26']?.toString() ?? '0') ?? 0) > 0
+                                      ? (e['pph_26_base']?.toString() ?? e['transaction_value']?.toString() ?? '0')
+                                      : '0',
+                                ),
+                              ),
+                              DataCell(Text('${e['pph_26'] ?? 0}')),

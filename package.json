@@ -1,0 +1,27 @@
+{
+  "name": "miniprojectkpi_ewi_revisi2",
+  "version": "1.0.0",
+  "main": "playwright.config.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "playwright test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YorChaai/MiniProjectKPI_EWI_Revisi2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YorChaai/MiniProjectKPI_EWI_Revisi2/issues"
+  },
+  "homepage": "https://github.com/YorChaai/MiniProjectKPI_EWI_Revisi2#readme",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}

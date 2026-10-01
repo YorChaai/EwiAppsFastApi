@@ -1,0 +1,10 @@
+# Language detection overrides for GitHub Linguist
+*.sql linguist-detectable=false
+*.sql linguist-vendored=true
+*.csv linguist-detectable=false
+*.xlsx linguist-detectable=false
+
+# Scratch and documentation
+scratch/** linguist-vendored=true
+docs/** linguist-documentation=true
+backend/side/** linguist-vendored=true

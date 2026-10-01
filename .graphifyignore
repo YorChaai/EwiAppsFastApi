@@ -1,0 +1,60 @@
+﻿# Folder side / file lama yang tidak perlu dibaca
+side/
+backend/side/
+frontend/side/
+
+# Archives & Backups
+*.rar
+*.zip
+*.7z
+*.tar.gz
+*.bak
+_backup_/
+backup/
+
+# Raw Data, Excel, SQL dumps
+*.xlsx
+*.xls
+*.csv
+*.tsv
+*.sql
+*.sqlite
+*.db
+exports/
+Sisa/
+temp/
+tmp/
+
+# Document & image dumps (skip non-code)
+*.pdf
+*.docx
+*.doc
+*.pptx
+*.png
+*.jpg
+*.jpeg
+*.svg
+
+# Flutter & Dart Build artifacts
+.dart_tool/
+build/
+android/
+ios/
+linux/
+macos/
+windows/
+web/
+.idea/
+.flutter-plugins*
+
+# Python caches & virtual environments
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+venv/
+.venv/
+*.pyc
+
+# Logs & large dumps
+*.log
+analyze_output*.txt

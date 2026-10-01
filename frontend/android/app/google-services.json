@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "223768746501",
+    "project_id": "exspan-app",
+    "storage_bucket": "exspan-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:223768746501:android:46d8c09cdc30d3bca35a6c",
+        "android_client_info": {
+          "package_name": "com.expense.expense_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "223768746501-hcbhkl4s8q2f1etm5igslpa6oi55tqhk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.expense.expense_app",
+            "certificate_hash": "3cce0e6405df0313a534dcca8218877b7208f0e0"
+          }
+        },
+        {
+          "client_id": "223768746501-hsdbjv9lv7cro5u9arts3dble52i7q27.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD01hTAtlmATzjLY-oRFBbaVCK7-6uYpNw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "223768746501-hsdbjv9lv7cro5u9arts3dble52i7q27.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

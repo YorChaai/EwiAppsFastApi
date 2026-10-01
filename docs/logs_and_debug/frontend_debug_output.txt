@@ -1,0 +1,60 @@
+Future<void> loadSettlements({
+    String? status,
+    String? startDate,
+    String? endDate,
+    String? type,
+    int? reportYear,
+    String? mode,
+    String? search,
+    bool notify = true,
+  }) async {
+    // ✅ SKIP load if not initialized yet (waiting for syncReportYear)
+    // This prevents flash of old data before settings year is loaded
+    if (!_initialized && reportYear == null) {
+      // Don't load with default year, wait for syncReportYear to complete
+      return;
+    }
+
+    // Set filters
+    _statusFilter = status;
+    _startDate = startDate;
+    _endDate = endDate;
+
+    if (reportYear != null) {
+      _filterYear = reportYear;
+    }
+    if (mode != null) {
+      _filterYearMode = mode;
+    }
+
+    // ✅ Centralized Sanitization
+    _searchQuery = search
+        ?.replaceAll('<', '')
+        .replaceAll('>', '')
+        .replaceAll('"', '')
+        .replaceAll("'", '')
+        .replaceAll('&', '')
+        .replaceAll(';', '')
+        .trim();
+
+    _loading = true;
+    if (notify) notifyListeners();
+    _error = null;
+
+    try {
+      final data = await _api.getSettlements(
+        status: _statusFilter,
+        startDate: _startDate,
+        endDate: _endDate,
+        type: type,
+        reportYear: _filterYear ?? _reportYear,
+        mode: _filterYearMode,
+        search: _searchQuery,
+      );
+
+      _settlements = List<Map<String, dynamic>>.from(data['settlements']);
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
+    }
+
+    _l

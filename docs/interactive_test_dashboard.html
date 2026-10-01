@@ -1,0 +1,2368 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EWIAPPS — Interactive Master Test Suite & QA Matrix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: rgba(17, 24, 39, 0.7);
+      --bg-card-hover: rgba(31, 41, 55, 0.85);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-active: rgba(99, 102, 241, 0.5);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      --accent-primary: #6366f1;
+      --accent-primary-hover: #4f46e5;
+      --accent-success: #10b981;
+      --accent-warning: #f59e0b;
+      --accent-danger: #ef4444;
+      --accent-cyan: #06b6d4;
+      --accent-purple: #8b5cf6;
+      --glow-primary: rgba(99, 102, 241, 0.25);
+      --glow-success: rgba(16, 185, 129, 0.2);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-full: 9999px;
+      --font-main: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Gradient Glows */
+    .ambient-glow {
+      position: fixed;
+      top: -200px;
+      left: 20%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(11, 15, 25, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .ambient-glow-2 {
+      position: fixed;
+      bottom: -200px;
+      right: 10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(11, 15, 25, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(11, 15, 25, 0.85);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+    }
+
+    .header-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: white;
+      box-shadow: 0 0 20px var(--glow-primary);
+    }
+
+    .brand-info h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge-live {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--radius-full);
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .brand-info p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Overall Progress Widget in Header */
+    .header-progress {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 0.6rem 1.25rem;
+      border-radius: var(--radius-lg);
+    }
+
+    .progress-stats {
+      text-align: right;
+    }
+
+    .progress-stats-title {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .progress-stats-numbers {
+      font-size: 1.1rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--text-main);
+    }
+
+    .progress-bar-container {
+      width: 140px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-success));
+      border-radius: var(--radius-full);
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 0%;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      padding: 0.55rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      border: none;
+      font-family: var(--font-main);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-hover));
+      color: white;
+      box-shadow: 0 4px 12px var(--glow-primary);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px var(--glow-primary);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-danger-outline {
+      background: transparent;
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .btn-danger-outline:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--accent-danger);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 2rem;
+      flex: 1;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Controls & Filter Bar */
+    .controls-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 280px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s ease;
+      font-family: var(--font-main);
+    }
+
+    .search-box input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px var(--glow-primary);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .chip {
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .chip:hover {
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .chip.active {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: var(--accent-primary);
+      color: #818cf8;
+      font-weight: 600;
+    }
+
+    /* Layout Grid: Sidebar Navigation + Main Test Cards */
+    .matrix-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Sidebar Navigation */
+    .module-nav {
+      position: sticky;
+      top: 90px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+      backdrop-filter: blur(12px);
+    }
+
+    .module-nav-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-dim);
+      padding: 0.5rem 0.75rem 0.75rem;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      margin-bottom: 0.25rem;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+    }
+
+    .nav-item.active {
+      background: rgba(99, 102, 241, 0.12);
+      color: #818cf8;
+      font-weight: 600;
+      border-left: 3px solid var(--accent-primary);
+    }
+
+    .nav-item-count {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-item.complete .nav-item-count {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-success);
+    }
+
+    /* Content Area */
+    .test-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .module-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      transition: border-color 0.2s ease;
+    }
+
+    .module-section:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .module-header {
+      padding: 1.25rem 1.5rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .module-header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .module-badge-num {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    .module-title-wrap h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .module-title-wrap p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .module-header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .module-progress-chip {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 0.3rem 0.75rem;
+      border-radius: var(--radius-full);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-batch-check {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-batch-check:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+    }
+
+    /* Test Cases List */
+    .test-cases-list {
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .test-item {
+      display: grid;
+      grid-template-columns: auto 110px 140px 1fr;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      transition: all 0.2s ease;
+    }
+
+    .test-item:last-child {
+      border-bottom: none;
+    }
+
+    .test-item:hover {
+      background: rgba(255, 255, 255, 0.02);
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .test-item.completed {
+      opacity: 0.65;
+    }
+    .test-item.completed .test-desc {
+      text-decoration: line-through;
+      color: var(--text-dim);
+    }
+
+    /* Custom Checkbox */
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .custom-checkbox {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .custom-checkbox:hover {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 10px var(--glow-primary);
+    }
+
+    .custom-checkbox.checked {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+      box-shadow: 0 0 12px var(--glow-success);
+    }
+
+    .custom-checkbox svg {
+      width: 14px;
+      height: 14px;
+      stroke: white;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      display: none;
+    }
+
+    .custom-checkbox.checked svg {
+      display: block;
+    }
+
+    .test-code {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #93c5fd;
+      background: rgba(59, 130, 246, 0.1);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      text-align: center;
+    }
+
+    .test-tag {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-full);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .tag-normal {
+      background: rgba(16, 185, 129, 0.1);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .tag-edge {
+      background: rgba(245, 158, 11, 0.1);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    .tag-security {
+      background: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .tag-integration {
+      background: rgba(139, 92, 246, 0.1);
+      color: #c084fc;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    .tag-ui {
+      background: rgba(6, 182, 212, 0.1);
+      color: #22d3ee;
+      border: 1px solid rgba(6, 182, 212, 0.2);
+    }
+
+    .test-desc {
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: var(--text-main);
+    }
+
+    .test-desc strong {
+      color: #e5e7eb;
+    }
+
+    /* Ripple Effect Matrix Table */
+    .ripple-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+    }
+
+    .ripple-table th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .ripple-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      vertical-align: middle;
+    }
+
+    .ripple-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--accent-success);
+      color: white;
+      padding: 0.85rem 1.5rem;
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 100;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Empty state */
+    .empty-state {
+      padding: 3rem;
+      text-align: center;
+      color: var(--text-dim);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .matrix-layout {
+        grid-template-columns: 1fr;
+      }
+      .module-nav {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem;
+      }
+      .header-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .header-actions {
+        justify-content: space-between;
+      }
+      .test-item {
+        grid-template-columns: auto 1fr;
+        gap: 0.75rem;
+      }
+      .test-code, .test-tag {
+        grid-column: 2;
+        justify-self: start;
+      }
+      .test-desc {
+        grid-column: 1 / -1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <div class="ambient-glow-2"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-logo">EW</div>
+        <div class="brand-info">
+          <h1>EWIAPPS QA Matrix <span class="badge-live">Live Test Suite</span></h1>
+          <p>Financial & Expense Management Interactive Testing Environment</p>
+        </div>
+      </div>
+
+      <!-- Header Progress Stats -->
+      <div class="header-progress">
+        <div class="progress-stats">
+          <div class="progress-stats-title">Progress Uji Coba</div>
+          <div class="progress-stats-numbers" id="totalProgressText">0 / 0 (0%)</div>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="totalProgressBar"></div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-outline" id="btnExportMarkdown">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          Export Status
+        </button>
+        <button class="btn btn-danger-outline" id="btnResetAll">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          Reset All
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Controls Panel -->
+    <div class="controls-panel">
+      <div class="search-row">
+        <div class="search-box">
+          <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="searchInput" placeholder="Cari skenario test, kode (misal BM-001), keyword kalkulasi, nominal, atau error...">
+        </div>
+        <div class="filter-chips">
+          <div class="chip active" data-filter="all">Semua Modul</div>
+          <div class="chip" data-filter="untested">Belum Diuji</div>
+          <div class="chip" data-filter="completed">Sudah Selesai (✓)</div>
+          <div class="chip" data-filter="edge">Edge Cases & Limit</div>
+          <div class="chip" data-filter="integration">Ripple Effects</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Matrix Layout -->
+    <div class="matrix-layout">
+      <!-- Sidebar Navigation -->
+      <aside class="module-nav" id="sidebarNav">
+        <div class="module-nav-title">Daftar Modul (19 Modul)</div>
+        <div id="sidebarItems"></div>
+      </aside>
+
+      <!-- Test Cases Content -->
+      <div class="test-content" id="modulesContainer"></div>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toastNotification">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+    <span id="toastMessage">State berhasil disimpan!</span>
+  </div>
+
+  <script>
+    // Master Test Matrix Data
+    const testMatrixData = [
+      {
+            "id": "modul-1",
+            "num": "01",
+            "title": "Bank Management & Rekonsiliasi Saldo",
+            "desc": "Pengujian rekening fisik (Bank Cash), saldo virtual staf (Bank Advance), kalkulasi matematis (+/-), dan alokasi multi-sumber.",
+            "cases": [
+                  {
+                        "code": "BM-001",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Daftar Rekening]</strong> 1. Buka Sidebar -> Klik menu <strong>BANK</strong>. 2. Pilih tab <strong>Bank Cash</strong>. 3. Verifikasi: Logo bank, nama rekening, nomor rekening, mata uang (IDR/USD), dan saldo riil tampil lengkap pada setiap kartu."
+                  },
+                  {
+                        "code": "BM-002",
+                        "tag": "Sorting",
+                        "type": "normal",
+                        "desc": "<strong>[Sorting Prioritas]</strong> 1. Buka Sidebar -> Klik menu <strong>BANK</strong> -> tab <strong>Bank Cash</strong>. 2. Verifikasi urutan grup kartu: Rekening Biasa -> Giro -> Bisnis -> TabBis -> Valas -> Rekening Baru di posisi paling bawah."
+                  },
+                  {
+                        "code": "BM-003",
+                        "tag": "UI Theme",
+                        "type": "ui",
+                        "desc": "<strong>[Border Warna Saldo]</strong> 1. Buka Sidebar -> Klik menu <strong>BANK</strong> -> tab <strong>Bank Cash</strong>. 2. Amati garis border samping kartu bank: Saldo > 0 beraksen Biru/Hijau, Saldo Rp 0 beraksen Abu-abu, Saldo minus beraksen Merah."
+                  },
+                  {
+                        "code": "BM-004",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Form Tambah Bank]</strong> 1. Buka Sidebar -> Klik menu <strong>BANK</strong> -> tab <strong>Bank Cash</strong>. 2. Klik tombol <strong>+ Tambah Rekening</strong> di kanan bawah. 3. Isi Nama: 'Bank Mandiri Operasional', No Rek: '140001928374', Saldo Awal: 100000. 4. Klik <strong>Simpan</strong>. 5. Verifikasi: Kartu rekening baru langsung muncul di daftar."
+                  },
+                  {
+                        "code": "BM-005",
+                        "tag": "Validation",
+                        "type": "edge",
+                        "desc": "<strong>[Validasi Form Kosong]</strong> 1. Buka menu <strong>BANK</strong> -> Klik <strong>+ Tambah Rekening</strong>. 2. Kosongkan semua isian form nama bank dan nomor rekening. 3. Klik <strong>Simpan</strong>. 4. Verifikasi: Muncul pesan error merah di bawah kolom dan form tidak tersimpan."
+                  },
+                  {
+                        "code": "BM-006",
+                        "tag": "Validation",
+                        "type": "edge",
+                        "desc": "<strong>[Duplikasi No Rek]</strong> 1. Buka menu <strong>BANK</strong> -> Klik <strong>+ Tambah Rekening</strong>. 2. Masukkan nomor rekening yang sudah terdaftar sebelumnya (contoh: 140001928374). 3. Klik <strong>Simpan</strong>. 4. Verifikasi: Muncul notifikasi penolakan duplikat nomor rekening."
+                  },
+                  {
+                        "code": "BM-007",
+                        "tag": "UI Flow",
+                        "type": "ui",
+                        "desc": "<strong>[Detail BottomSheet]</strong> 1. Buka Sidebar -> Klik menu <strong>BANK</strong> -> tab <strong>Bank Cash</strong>. 2. Klik salah satu kartu bank (contoh: BRI). 3. Verifikasi: Muncul modal popup 'Detail Bank Cash' yang menampilkan Total Bank Cash, tombol Edit Bank Cash, tombol Kelola Cash/Uang, dan Riwayat Aktivitas."
+                  },
+                  {
+                        "code": "BM-008",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Edit Bank]</strong> 1. Buka menu <strong>BANK</strong> -> Klik salah satu kartu bank -> Klik tombol oranye <strong>Edit Bank Cash</strong>. 2. Ubah nama rekening (contoh: BNI menjadi BNI1). 3. Klik <strong>Simpan</strong>. 4. Verifikasi: Muncul notifikasi hijau 'Data rekening berhasil diperbarui' dan nama di kartu bank langsung berganti."
+                  },
+                  {
+                        "code": "BM-009",
+                        "tag": "Math Calc",
+                        "type": "normal",
+                        "desc": "<strong>[Toggle Tambah (+)]</strong> 1. Buka menu <strong>BANK</strong> -> Klik kartu bank -> Klik tombol hijau <strong>Kelola Cash/Uang</strong>. 2. Pilih toggle hijau <strong>(+)</strong>. 3. Masukkan nominal Rp 10.000.000. 4. Cek teks kalkulasi: [Saldo Awal] + Rp 10.000.000 = [Saldo Akhir]. 5. Klik <strong>Simpan</strong> -> Verifikasi saldo bertambah tepat Rp 10.000.000."
+                  },
+                  {
+                        "code": "BM-010",
+                        "tag": "Math Calc",
+                        "type": "normal",
+                        "desc": "<strong>[Toggle Kurang (-)]</strong> 1. Buka menu <strong>BANK</strong> -> Klik kartu bank -> Klik tombol hijau <strong>Kelola Cash/Uang</strong>. 2. Pilih toggle merah <strong>(-)</strong>. 3. Masukkan nominal Rp 3.000.000. 4. Cek teks kalkulasi: [Saldo Awal] - Rp 3.000.000 = [Saldo Akhir]. 5. Klik <strong>Simpan</strong> -> Verifikasi saldo berkurang tepat Rp 3.000.000."
+                  },
+                  {
+                        "code": "BM-011",
+                        "tag": "Edge Case",
+                        "type": "edge",
+                        "desc": "<strong>[Validasi Nominal < Rp 100]</strong> 1. Buka menu <strong>BANK</strong> -> Klik kartu bank -> Klik tombol hijau <strong>Kelola Cash/Uang</strong>. 2. Masukkan nominal '0' atau '99'. 3. Klik <strong>Simpan</strong>. 4. Verifikasi: Muncul pesan error merah 'Nominal penyesuaian minimal Rp 100' dan form tidak tersimpan."
+                  },
+                  {
+                        "code": "BM-012",
+                        "tag": "Validation",
+                        "type": "edge",
+                        "desc": "<strong>[Filter Karakter Huruf/Minus]</strong> 1. Buka menu <strong>BANK</strong> -> Klik kartu bank -> Klik <strong>Kelola Cash/Uang</strong>. 2. Pada kolom input nominal, coba ketik karakter huruf 'abc' atau simbol '@#$'. 3. Verifikasi: Kolom input menolak karakter selain angka numerik."
+                  },
+                  {
+                        "code": "BM-013",
+                        "tag": "Security",
+                        "type": "security",
+                        "desc": "<strong>[Tarik Melebihi Saldo]</strong> 1. Buka menu <strong>BANK</strong> -> Klik kartu bank dengan saldo Rp 1.000.000 -> Klik <strong>Kelola Cash/Uang</strong>. 2. Pilih toggle merah (-) Kurang -> Masukkan nominal Rp 5.000.000. 3. Klik <strong>Simpan</strong>. 4. Verifikasi: Sistem menolak dengan peringatan 'Saldo tidak mencukupi (Maks: Rp1.000.000)'."
+                  },
+                  {
+                        "code": "BM-014",
+                        "tag": "Edge Case",
+                        "type": "edge",
+                        "desc": "<strong>[Nominal Ekstrem 1 Triliun]</strong> 1. Buka menu <strong>BANK</strong> -> Klik kartu bank -> Klik <strong>Kelola Cash/Uang</strong>. 2. Masukkan nominal 1.000.000.000.000 (1 Triliun). 3. Klik <strong>Simpan</strong>. 4. Verifikasi: Format rupiah dan database memproses dengan presisi tanpa overflow/crash."
+                  },
+                  {
+                        "code": "BM-015",
+                        "tag": "Security",
+                        "type": "security",
+                        "desc": "<strong>[Double Submit Lock]</strong> 1. Buka menu <strong>BANK</strong> -> Klik kartu bank -> Klik tombol hijau <strong>Kelola Cash/Uang</strong>. 2. Masukkan nominal (contoh: 500.000). 3. Klik tombol <strong>Simpan</strong> secara sangat cepat berkali-kali (spam click 3-5x). 4. Verifikasi: Tombol langsung terkunci (disabled/loading) dan transaksi hanya tersimpan tepat 1 kali tanpa duplikasi saldo."
+                  },
+                  {
+                        "code": "BM-016",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Daftar Bank Advance]</strong> 1. Buka Sidebar -> Klik menu <strong>BANK</strong> -> Klik tab <strong>Bank Advance</strong>. 2. Verifikasi: Avatar staf, nama karyawan, jabatan, Saldo Virtual (hijau), dan Saldo B (oranye) tampil rapi."
+                  },
+                  {
+                        "code": "BM-017",
+                        "tag": "UI Badge",
+                        "type": "ui",
+                        "desc": "<strong>[Badge HUTANG]</strong> 1. Buka menu <strong>BANK</strong> -> tab <strong>Bank Advance</strong>. 2. Cari karyawan yang memiliki utang kasbon berjalan aktif. 3. Verifikasi: Tampil badge merah tebal bertuliskan 'HUTANG' di kartu staf bersangkutan."
+                  },
+                  {
+                        "code": "BM-018",
+                        "tag": "Search",
+                        "type": "normal",
+                        "desc": "<strong>[Search Client-Side]</strong> 1. Buka menu <strong>BANK</strong> -> tab <strong>Bank Advance</strong>. 2. Ketik nama staf di kolom pencarian atas. 3. Verifikasi: Daftar staf menyaring seketika secara instan tanpa loading lama."
+                  },
+                  {
+                        "code": "BM-019",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Alokasi Single Bank]</strong> 1. Buka tab Bank Advance -> Klik salah satu staf -> Klik <strong>Kelola Advance/Uang</strong>. 2. Pilih Bank Sumber (misal: Bank BCA) -> Toggle (+) Rp 2.000.000. 3. Klik <strong>Simpan</strong>. 4. Verifikasi: Saldo virtual staf bertambah Rp 2.000.000 dan fisik Bank BCA berkurang Rp 2.000.000 secara real-time."
+                  },
+                  {
+                        "code": "BM-020",
+                        "tag": "Math Calc",
+                        "type": "edge",
+                        "desc": "<strong>[Alokasi Multi-Bank]</strong> 1. Di modal Kelola Advance, klik <strong>+ Tambah Sumber Dana</strong>. 2. Baris 1: Bank BCA (Rp 3.000.000), Baris 2: Bank Mandiri (Rp 2.000.000). 3. Cek kalkulasi total = Saldo Awal + Rp 5.000.000. 4. Klik <strong>Simpan</strong> -> Verifikasi kedua bank fisik terpotong otomatis."
+                  }
+            ]
+      },
+      {
+            "id": "modul-2",
+            "num": "02",
+            "title": "Logbook, Audit Trail & Workflow Timeline",
+            "desc": "Pengujian pencatatan kronologis transaksi kas, audit trail aktivitas, dan visual timeline progres dokumen.",
+            "cases": [
+                  {
+                        "code": "LB-001",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Buka Riwayat Bank Cash]</strong> 1. Buka Sidebar -> Klik menu <strong>BANK</strong> -> Klik tab <strong>Bank Cash</strong>. 2. Klik salah satu kartu bank fisik (misal: Bank Mandiri atau BCA1). 3. Pada popup detail, klik tombol putih <strong>Riwayat Aktivitas / Log Book</strong>. 4. Verifikasi: Lembar riwayat terbuka menampilkan daftar mutasi kas masuk (hijau) dan kas keluar (merah)."
+                  },
+                  {
+                        "code": "LB-002",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Buka Riwayat Bank Advance]</strong> 1. Buka Sidebar -> Klik menu <strong>BANK</strong> -> Klik tab <strong>Bank Advance</strong>. 2. Klik salah satu kartu staf (misal: Manager 1). 3. Pada popup detail, klik tombol putih <strong>Riwayat Aktivitas / Log Book</strong>. 4. Verifikasi: Lembar riwayat terbuka menampilkan mutasi alokasi dana virtual dan kasbon staf."
+                  },
+                  {
+                        "code": "LB-003",
+                        "tag": "Sorting",
+                        "type": "normal",
+                        "desc": "<strong>[Urutan Riwayat Terbaru Paling Atas]</strong> 1. Buka menu <strong>BANK</strong> -> Klik tab <strong>Bank Advance</strong> -> Klik salah satu staf -> Klik tombol putih <strong>Riwayat Aktivitas / Log Book</strong>. 2. Perhatikan baris transaksi paling atas. 3. Verifikasi: Transaksi yang baru saja dilakukan dengan jam/menit paling terkini selalu berada di baris pertama paling atas (bukan di bawah)."
+                  },
+                  {
+                        "code": "LB-004",
+                        "tag": "Regex Clean",
+                        "type": "edge",
+                        "desc": "<strong>[Kerapian Teks Riwayat]</strong> 1. Buka menu <strong>BANK</strong> -> Buka <strong>Riwayat Aktivitas / Log Book</strong> pada bank fisik atau staf. 2. Baca teks judul dan deskripsi di kartu riwayat. 3. Verifikasi: Kalimat tersusun rapi (contoh: 'Terima Alokasi - Manager 1'), tidak ada simbol pipa '|', kurung kurawal '{}', atau teks kode sistem yang bocor."
+                  },
+                  {
+                        "code": "LB-005",
+                        "tag": "UI Animation",
+                        "type": "ui",
+                        "desc": "<strong>[Layar Penuh Riwayat (Fullscreen)]</strong> 1. Buka menu <strong>BANK</strong> -> Buka <strong>Riwayat Aktivitas / Log Book</strong>. 2. Di pojok kanan atas lembar riwayat, klik ikon <strong>Fullscreen (Kotak Persegi / Panah Melebar)</strong>. 3. Verifikasi: Lembar riwayat langsung membesar memenuhi seluruh layar."
+                  },
+                  {
+                        "code": "LB-006",
+                        "tag": "Audit Trail",
+                        "type": "normal",
+                        "desc": "<strong>[Riwayat Catatan Alasan Alokasi Masuk]</strong> 1. Buka menu <strong>BANK</strong> -> tab <strong>Bank Advance</strong> -> Klik staf Manager 1 -> Klik tombol hijau <strong>Kelola Advance/Uang</strong>. 2. Pada 'Pilih Bank Cash', pilih <strong>Mandiri</strong>. 3. Pada nominal, ketik <strong>2.000.000</strong>. 4. Pada kolom 'Catatan / Alasan Alokasi', ketik: <strong>Dana Operasional Proyek A</strong>. 5. Klik <strong>Simpan Penyesuaian Saldo</strong>. 6. Buka tombol putih <strong>Riwayat Aktivitas / Log Book</strong> staf -> Verifikasi: Judul baris atas tertulis <strong>Terima Alokasi - Manager 1: Dana Operasional Proyek A</strong> dengan nominal <strong>+ Rp 2.000.000</strong>."
+                  },
+                  {
+                        "code": "LB-007",
+                        "tag": "Audit Trail",
+                        "type": "normal",
+                        "desc": "<strong>[Riwayat Catatan Alasan Penarikan Alokasi]</strong> 1. Buka menu <strong>BANK</strong> -> tab <strong>Bank Advance</strong> -> Klik staf Manager 1 -> Klik tombol hijau <strong>Kelola Advance/Uang</strong>. 2. Klik tombol toggle ikon minus merah <strong>(-) Kurang</strong>. 3. Pada 'Pilih Bank Cash', pilih <strong>Mandiri</strong> -> Masukkan nominal <strong>500.000</strong>. 4. Pada kolom catatan, ketik: <strong>Koreksi Kelebihan Saldo</strong>. 5. Klik <strong>Simpan Penyesuaian Saldo</strong>. 6. Buka <strong>Riwayat Aktivitas / Log Book</strong> staf -> Verifikasi: Judul baris atas tertulis <strong>Tarik Alokasi - Manager 1: Koreksi Kelebihan Saldo</strong> dengan nominal <strong>- Rp 500.000</strong>."
+                  },
+                  {
+                        "code": "LB-008",
+                        "tag": "Dual-Entry",
+                        "type": "integration",
+                        "desc": "<strong>[Pencatatan Ganda (Bank Cash & Advance)]</strong> 1. Buka tab <strong>Bank Advance</strong> -> Klik Manager 1 -> Kelola Advance/Uang -> Pilih Bank Mandiri -> Nominal Rp 1.000.000 -> Simpan. 2. Buka tab <strong>Bank Cash</strong> -> Klik Mandiri -> Buka <strong>Riwayat Aktivitas</strong> -> Verifikasi: Tercatat pengeluaran merah <strong>- Rp 1.000.000</strong> ke virtual Manager 1. 3. Buka tab <strong>Bank Advance</strong> -> Klik Manager 1 -> Buka <strong>Riwayat Aktivitas</strong> -> Verifikasi: Tercatat pemasukan hijau <strong>+ Rp 1.000.000</strong> dari Bank Mandiri."
+                  },
+                  {
+                        "code": "LB-009",
+                        "tag": "Integration",
+                        "type": "integration",
+                        "desc": "<strong>[Riwayat Kasbon Single Dicairkan]</strong> 1. Buka Sidebar -> Menu <strong>KASBON</strong> -> Klik <strong>+ Buat Pengajuan</strong> -> Pilih <strong>Single</strong> -> Tahun 2026 -> Klik <strong>Buat</strong>. 2. Di Tabel 1, klik <strong>+ Tambah Item</strong> -> Keperluan: 'Beli ATK Kantor', Estimasi: Rp 1.500.000 -> Simpan. 3. Klik <strong>Submit Kasbon</strong> -> Klik centang hijau <strong>Approve Item</strong>. 4. Di Tabel 2 Pencairan, pilih Bank Sumber: <strong>Mandiri</strong> (atau bank yang ada saldonya) -> Klik <strong>Approve Pencairan</strong> -> Klik <strong>Setujui Final Kasbon</strong> di kanan bawah. 5. Buka menu <strong>BANK</strong> -> tab <strong>Bank Cash</strong> -> Buka Riwayat Bank Mandiri (Verifikasi: Tercatat pengeluaran kasbon <strong>- Rp 1.500.000</strong>). 6. Buka tab <strong>Bank Advance</strong> -> Buka Riwayat staf pengaju (Verifikasi: Tercatat pencairan kasbon <strong>+ Rp 1.500.000</strong> dan hutang kasbon bertambah)."
+                  },
+                  {
+                        "code": "LB-010",
+                        "tag": "Integration",
+                        "type": "integration",
+                        "desc": "<strong>[Riwayat Kasbon Batch Dicairkan]</strong> 1. Buka Sidebar -> Menu <strong>KASBON</strong> -> Klik <strong>+ Buat Pengajuan</strong> -> Pilih <strong>Batch</strong> -> Ketik Judul: <strong>Operasional Event Cabang</strong> -> Klik <strong>Buat</strong>. 2. Tambah item: 'Sewa Booth Pameran', Estimasi: Rp 5.000.000 -> Simpan. 3. Klik <strong>Submit Kasbon</strong> -> Approve item di Tabel 1. 4. Di Tabel 2, pilih Bank Sumber yang ada saldo -> Approve Pencairan -> Klik <strong>Setujui Final Kasbon</strong>. 5. Buka menu <strong>BANK</strong> -> Buka Riwayat Bank Cash sumber dan Riwayat Bank Advance staf pengaju. 6. Verifikasi: Di kedua riwayat tercantum judul kegiatan <strong>Operasional Event Cabang</strong> dan nominal Rp 5.000.000."
+                  },
+                  {
+                        "code": "LB-011",
+                        "tag": "Integration",
+                        "type": "integration",
+                        "desc": "<strong>[Riwayat Pengembalian Sisa Kasbon]</strong> 1. Buka Sidebar -> Menu <strong>KASBON</strong> -> Klik tombol biru <strong>+ Buat Kasbon</strong> di pojok kanan atas -> Muncul dialog peringatan <em>'Perhatian: Outstanding Kasbon'</em>. 2. Pada dialog tersebut, klik tombol <strong>Kembalikan Dana Sekarang</strong> -> Terbuka form 'Pengembalian Dana Langsung'. 3. Pilih Sumber Bank: <strong>Mandiri</strong> -> Masukkan Nominal: <strong>100.000</strong> -> Unggah bukti transfer -> Klik tombol biru <strong>Simpan</strong>. 4. Buka menu <strong>BANK</strong> -> tab <strong>Bank Advance</strong> -> Buka Riwayat staf peminjam. 5. Verifikasi: Tercatat pemulihan Saldo Virtual Advance (<strong>+ Rp 100.000</strong>) dan pelunasan/pengurangan Hutang Kasbon berjalan (<strong>- Rp 100.000</strong>)."
+                  },
+                  {
+                        "code": "LB-012",
+                        "tag": "Integration",
+                        "type": "integration",
+                        "desc": "<strong>[Riwayat Settlement Selesai Pas Kasbon]</strong> 1. Buka Sidebar -> Menu <strong>SETTLEMENTS</strong> -> Klik <strong>+ Buat Settlement</strong> -> Pilih Single -> Buat. 2. Di Tabel 1, klik <strong>+ Tambah Pengeluaran</strong> -> Nama: 'Belanja Perlengkapan', Qty: 1, Harga: Rp 2.000.000 (sama persis dengan kasbon Rp 2.000.000 yang dimiliki staf) -> Upload bukti struk -> Simpan. 3. Submit Settlement -> Approve nota pengeluaran -> Klik <strong>Setujui Final Settlement</strong>. 4. Buka menu <strong>BANK</strong> -> tab <strong>Bank Advance</strong> -> Buka Riwayat staf -> Verifikasi: Tercatat realisasi belanja dan sisa hutang kasbon staf lunas (Rp 0)."
+                  },
+                  {
+                        "code": "LB-013",
+                        "tag": "Integration",
+                        "type": "integration",
+                        "desc": "<strong>[Riwayat Settlement Nombok Reimbursement]</strong> 1. Buka Sidebar -> Menu <strong>SETTLEMENTS</strong> -> Buat pengajuan settlement di mana total nota belanja lebih besar dari kasbon staf (misal: Kasbon staf Rp 2.000.000, tapi staf input belanja Rp 2.500.000 sehingga nombok Rp 500.000). 2. Approve nota belanja di Tabel 1. 3. Di Tabel 2 Reimbursement, pilih Bank Cash sumber penggantian: <strong>Mandiri</strong> -> Klik Approve -> Klik <strong>Setujui Final Settlement</strong>. 4. Buka menu <strong>BANK</strong> -> tab <strong>Bank Cash</strong> -> Buka Riwayat Bank Mandiri -> Verifikasi: Tercatat pengeluaran ganti nombok kantor merah <strong>- Rp 500.000</strong>."
+                  },
+                  {
+                        "code": "LB-014",
+                        "tag": "Integration",
+                        "type": "integration",
+                        "desc": "<strong>[Riwayat Settlement Lebih & Kembalian Sisa]</strong> 1. Buka Sidebar -> Menu <strong>SETTLEMENTS</strong> -> Buat settlement di mana total belanja lebih kecil dari kasbon (misal: Kasbon staf Rp 2.000.000, tapi staf hanya belanja Rp 1.200.000 sehingga ada sisa uang kasbon Rp 800.000). 2. Di bagian pengembalian sisa, pilih Bank Cash penerima: <strong>Mandiri</strong> dan upload bukti setor kembalian Rp 800.000 -> Klik <strong>Setujui Final Settlement</strong>. 3. Buka menu <strong>BANK</strong> -> tab <strong>Bank Cash</strong> -> Buka Riwayat Bank Mandiri -> Verifikasi: Tercatat uang masuk pengembalian sisa hijau <strong>+ Rp 800.000</strong>."
+                  },
+                  {
+                        "code": "LB-015",
+                        "tag": "Integration",
+                        "type": "integration",
+                        "desc": "<strong>[Riwayat Revenue Pemasukan]</strong> 1. Buka Sidebar -> Menu <strong>Revenue Management</strong> -> Klik tombol <strong>+ Tambah Pemasukan</strong>. 2. Isi Kategori: 'Pendapatan Proyek', Pilih Bank: <strong>Mandiri</strong>, Nominal: <strong>25.000.000</strong>, Upload Bukti Setor -> Klik <strong>Simpan</strong>. 3. Buka menu <strong>BANK</strong> -> tab <strong>Bank Cash</strong> -> Klik Mandiri -> Buka <strong>Riwayat Aktivitas / Log Book</strong>. 4. Verifikasi: Tercatat transaksi Revenue uang masuk <strong>+ Rp 25.000.000</strong>."
+                  },
+                  {
+                        "code": "LB-016",
+                        "tag": "Integration",
+                        "type": "integration",
+                        "desc": "<strong>[Riwayat Pembagian Dividen]</strong> 1. Buka Sidebar -> Menu <strong>Dividend Management</strong> -> Klik tombol <strong>+ Bagi Dividen</strong>. 2. Isi Nama Penerima: 'Pemegang Saham A', Pilih Bank Sumber: <strong>Mandiri</strong>, Nominal: <strong>10.000.000</strong>, Upload Bukti -> Klik <strong>Simpan</strong>. 3. Buka menu <strong>BANK</strong> -> tab <strong>Bank Cash</strong> -> Klik Mandiri -> Buka <strong>Riwayat Aktivitas / Log Book</strong>. 4. Verifikasi: Tercatat transaksi Dividen uang keluar <strong>- Rp 10.000.000</strong>."
+                  },
+                  {
+                        "code": "LB-017",
+                        "tag": "Adjustment",
+                        "type": "normal",
+                        "desc": "<strong>[Riwayat Tambah Kas Manual (+)]</strong> 1. Buka menu <strong>BANK</strong> -> tab <strong>Bank Cash</strong> -> Klik kartu Bank Mandiri -> Klik tombol hijau <strong>Kelola Cash/Uang</strong>. 2. Pilih toggle hijau <strong>(+) Tambah</strong> -> Ketik nominal <strong>5.000.000</strong> -> Klik <strong>Simpan</strong>. 3. Buka tombol putih <strong>Riwayat Aktivitas / Log Book</strong> Bank Mandiri. 4. Verifikasi: Tercatat transaksi 'Penambahan Saldo Kas Riil' sebesar <strong>+ Rp 5.000.000</strong> lengkap dengan nama akun Anda sebagai pengubah."
+                  },
+                  {
+                        "code": "LB-018",
+                        "tag": "Adjustment",
+                        "type": "normal",
+                        "desc": "<strong>[Riwayat Tarik Kas Manual (-)]</strong> 1. Buka menu <strong>BANK</strong> -> tab <strong>Bank Cash</strong> -> Klik kartu Bank Mandiri -> Klik tombol hijau <strong>Kelola Cash/Uang</strong>. 2. Pilih toggle merah <strong>(-) Kurang</strong> -> Ketik nominal <strong>1.000.000</strong> -> Klik <strong>Simpan</strong>. 3. Buka tombol putih <strong>Riwayat Aktivitas / Log Book</strong> Bank Mandiri. 4. Verifikasi: Tercatat transaksi 'Pengurangan Saldo Kas Riil' sebesar <strong>- Rp 1.000.000</strong>."
+                  },
+                  {
+                        "code": "LB-019",
+                        "tag": "Security",
+                        "type": "security",
+                        "desc": "<strong>[Pencegahan Riwayat Palsu Saat Transaksi Gagal]</strong> 1. Buka menu <strong>BANK</strong> -> tab <strong>Bank Cash</strong> -> Klik Bank Mandiri (saldo misal Rp 10.000.000) -> Klik <strong>Kelola Cash/Uang</strong>. 2. Pilih toggle merah (-) Kurang -> Masukkan nominal melebihi saldo: <strong>50.000.000</strong> -> Klik Simpan. 3. Sistem menolak dengan notifikasi 'Saldo tidak mencukupi'. 4. Buka <strong>Riwayat Aktivitas / Log Book</strong> Bank Mandiri -> Verifikasi: TIDAK ADA catatan mutasi yang masuk (riwayat tetap bersih karena transaksi gagal)."
+                  },
+                  {
+                        "code": "LB-020",
+                        "tag": "Audit Trail",
+                        "type": "normal",
+                        "desc": "<strong>[Riwayat Penolakan Kasbon di Timeline]</strong> 1. Buka menu <strong>KASBON</strong> -> Buka salah satu kasbon staf yang berstatus 'Submitted'. 2. Di Tabel 1, klik ikon silang merah <strong>Reject</strong> pada salah satu item -> Ketik catatan teguran: 'Lampiran estimasi belum lengkap' -> Kirim. 3. Klik tombol <strong>Timeline Progres</strong> di pojok kanan atas layar kasbon. 4. Verifikasi: Tercatat riwayat penolakan lengkap dengan nama manager, jam penolakan, dan isi teguran 'Lampiran estimasi belum lengkap'."
+                  },
+                  {
+                        "code": "LB-021",
+                        "tag": "Audit Trail",
+                        "type": "normal",
+                        "desc": "<strong>[Riwayat Siklus Dokumen Lengkap di Timeline]</strong> 1. Pada dokumen Kasbon, lakukan alur lengkap: Staf Submit -> Manager Tolak -> Staf Perbaiki & Submit Ulang -> Manager Setujui -> Finance Cairkan. 2. Klik tombol <strong>Timeline Progres</strong> di kanan atas kasbon. 3. Verifikasi: Seluruh jejak proses persetujuan (Draft -> Submitted -> Rejected -> Resubmitted -> Approved -> Disbursed) tersusun urut dari awal hingga akhir."
+                  },
+                  {
+                        "code": "LB-022",
+                        "tag": "UI Timeline",
+                        "type": "ui",
+                        "desc": "<strong>[Timeline Progres Dokumen Settlement]</strong> 1. Buka menu <strong>SETTLEMENTS</strong> -> Buka salah satu dokumen settlement yang sudah disetujui atau berstatus 'Completed'. 2. Klik tombol <strong>Timeline Progres</strong> di pojok kanan atas. 3. Verifikasi: Menampilkan visual tahapan persetujuan pengeluaran lengkap dengan nama penanggung jawab dan tanggal/jam eksekusi."
+                  },
+                  {
+                        "code": "LB-023",
+                        "tag": "Security",
+                        "type": "security",
+                        "desc": "<strong>[Pencegahan Riwayat Ganda (Anti Spam Klik)]</strong> 1. Buka menu <strong>BANK</strong> -> tab <strong>Bank Advance</strong> -> Klik salah satu staf -> Klik <strong>Kelola Advance/Uang</strong> -> Isi nominal Rp 100.000. 2. Klik tombol <strong>Simpan Penyesuaian Saldo</strong> berkali-kali secara sangat cepat (spam click 3-5 kali). 3. Buka <strong>Riwayat Aktivitas / Log Book</strong> staf. 4. Verifikasi: Transaksi hanya tercatat tepat 1 baris mutasi Rp 100.000 (tidak ada duplikasi/baris ganda)."
+                  },
+                  {
+                        "code": "LB-024",
+                        "tag": "Security",
+                        "type": "security",
+                        "desc": "<strong>[Pemisahan Riwayat Antar Perusahaan]</strong> 1. Buka menu <strong>BANK</strong> -> Buka Riwayat Aktivitas pada Perusahaan A. 2. Buka Sidebar -> Menu <strong>Pengaturan</strong> -> Ganti ke Perusahaan B -> Buka menu <strong>BANK</strong> di Perusahaan B. 3. Verifikasi: Riwayat transaksi Perusahaan A tidak muncul di Perusahaan B (data terpisah 100% per perusahaan)."
+                  },
+                  {
+                        "code": "LB-025",
+                        "tag": "Persistence",
+                        "type": "normal",
+                        "desc": "<strong>[Riwayat Tetap Utuh Pasca Restart]</strong> 1. Buka menu <strong>BANK</strong> -> Lakukan transaksi alokasi saldo atau kasbon. 2. Lakukan Hot Restart aplikasi atau tekan F5 pada browser. 3. Buka kembali <strong>Riwayat Aktivitas / Log Book</strong>. 4. Verifikasi: Seluruh daftar riwayat tetap tersimpan utuh di database dan tidak ada data yang hilang."
+                  }
+            ]
+      },
+      {
+            "id": "modul-3",
+            "num": "03",
+            "title": "Kasbon / Advance (List, Detail & State Machine)",
+            "desc": "Pengujian pembuatan, input detail form item kasbon, state machine persetujuan, dan pencairan finance.",
+            "cases": [
+                  {
+                        "code": "KB-001",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Buat Kasbon Single]</strong> 1. Buka Sidebar -> Klik menu <strong>KASBON</strong>. 2. Klik tombol biru <strong>+ Buat Kasbon</strong> di pojok kanan atas (Jika muncul popup peringatan outstanding, klik tombol <em>Lanjut Buat Pengeluaran</em>). 3. Pilih radio <strong>Single</strong> -> Pilih Tahun: <strong>2026</strong> -> Klik tombol biru <strong>Buat</strong>. 4. Verifikasi: Layar langsung masuk ke halaman formulir detail kasbon baru."
+                  },
+                  {
+                        "code": "KB-002",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Buat Kasbon Batch]</strong> 1. Buka Sidebar -> Klik menu <strong>KASBON</strong>. 2. Klik tombol biru <strong>+ Buat Kasbon</strong> di pojok kanan atas. 3. Pilih radio <strong>Batch</strong> -> Masukkan Judul Kegiatan: <strong>'Kegiatan Riset Lapangan'</strong> -> Pilih Tanggal. 4. Klik tombol biru <strong>Buat</strong>. 5. Verifikasi: Dokumen kasbon Batch berhasil terbuat dan masuk ke halaman formulir item batch."
+                  },
+                  {
+                        "code": "KB-003",
+                        "tag": "Validation",
+                        "type": "edge",
+                        "desc": "<strong>[Outstanding Kasbon Guard]</strong> 1. Buka menu <strong>KASBON</strong> menggunakan akun staf yang sedang memiliki sisa hutang kasbon berjalan. 2. Klik tombol biru <strong>+ Buat Kasbon</strong> di pojok kanan atas. 3. Verifikasi: Muncul modal dialog peringatan bertuliskan merah <em>'Perhatian: Outstanding Kasbon'</em> beserta nominal sisa kasbon yang belum dipertanggungjawabkan."
+                  },
+                  {
+                        "code": "KB-004",
+                        "tag": "Flow",
+                        "type": "normal",
+                        "desc": "<strong>[Lanjutkan di Tengah Outstanding]</strong> 1. Pada dialog peringatan Outstanding Kasbon, klik tombol biru <strong>Lanjut Buat Pengeluaran</strong>. 2. Verifikasi: Dialog tertutup dan form pilihan Single/Batch terbuka sehingga staf tetap dapat membuat pengajuan kasbon baru."
+                  },
+                  {
+                        "code": "KB-005",
+                        "tag": "Validation",
+                        "type": "edge",
+                        "desc": "<strong>[Validasi Batch Kosong]</strong> 1. Buka menu <strong>KASBON</strong> -> Klik tombol <strong>+ Buat Kasbon</strong> -> Pilih opsi <strong>Batch</strong>. 2. Kosongkan kolom 'Judul Kegiatan' -> Klik tombol <strong>Buat</strong>. 3. Verifikasi: Sistem menolak dan memunculkan pesan error merah 'Judul kegiatan wajib diisi'."
+                  },
+                  {
+                        "code": "KB-006",
+                        "tag": "Form Input",
+                        "type": "normal",
+                        "desc": "<strong>[Form Tambah Item Kasbon]</strong> 1. Di dalam halaman detail Kasbon, klik tombol hijau <strong>+ Tambah Item</strong> di Tabel 1. 2. Isi Form: Pilih Tanggal, Pilih Kategori (misal: 'ATK & Perlengkapan'), Ketik Deskripsi Keperluan: 'Beli ATK Kantor', Ketik Estimasi: <strong>1.500.000</strong>. 3. Klik <strong>Simpan</strong>. 4. Verifikasi: Baris item baru muncul di Tabel 1 dengan nominal Rp 1.500.000."
+                  },
+                  {
+                        "code": "KB-007",
+                        "tag": "Quick Add",
+                        "type": "normal",
+                        "desc": "<strong>[Quick Add Category Inline]</strong> 1. Pada modal popup Tambah Item Kasbon, klik tombol <strong>+ Kategori Baru</strong> di samping dropdown kategori. 2. Masukkan nama kategori baru: 'Operasional Lapangan' -> Klik Simpan. 3. Verifikasi: Kategori baru langsung tersimpan dan otomatis terpilih di dropdown kategori."
+                  },
+                  {
+                        "code": "KB-008",
+                        "tag": "Math Calc",
+                        "type": "normal",
+                        "desc": "<strong>[Form Edit Item Kasbon]</strong> 1. Di Tabel 1 Kasbon, klik ikon pensil / edit pada baris item kasbon. 2. Ubah nominal estimasi dari Rp 1.500.000 menjadi <strong>2.000.000</strong> -> Klik Simpan. 3. Verifikasi: Total Pengajuan di kartu ringkasan atas langsung naik menjadi Rp 2.000.000."
+                  },
+                  {
+                        "code": "KB-009",
+                        "tag": "Batch Action",
+                        "type": "normal",
+                        "desc": "<strong>[Sapu Jagat Bulk Delete]</strong> 1. Centang kotak checkbox di samping 2 atau lebih baris item di Tabel 1 kasbon. 2. Klik tombol merah bertuliskan <strong>Hapus Terpilih</strong> di toolbar tabel atas. 3. Verifikasi: Semua baris yang dicentang terhapus sekaligus."
+                  },
+                  {
+                        "code": "KB-010",
+                        "tag": "State Machine",
+                        "type": "normal",
+                        "desc": "<strong>[Submit Kasbon]</strong> 1. Setelah mengisi item belanja di Tabel 1, staf klik tombol hijau <strong>Submit Kasbon</strong> di pojok kanan bawah. 2. Pada dialog konfirmasi, klik tombol <strong>Ya, Kirim</strong>. 3. Verifikasi: Status dokumen berubah menjadi 'Submitted' dan tombol edit item terkunci."
+                  },
+                  {
+                        "code": "KB-011",
+                        "tag": "Role Approval",
+                        "type": "normal",
+                        "desc": "<strong>[Manager Approve Item]</strong> 1. Login sebagai Manager -> Buka dokumen kasbon berstatus 'Submitted'. 2. Di Tabel 1, klik ikon centang hijau <strong>Approve</strong> pada baris item belanja. 3. Verifikasi: Status item berubah menjadi 'Approved' berwarna hijau."
+                  },
+                  {
+                        "code": "KB-012",
+                        "tag": "Role Reject",
+                        "type": "normal",
+                        "desc": "<strong>[Manager Reject & Checklist Form]</strong> 1. Login sebagai Manager -> Di Tabel 1, klik ikon silang merah <strong>Reject</strong> pada baris item. 2. Muncul dialog checklist penolakan -> Ketik alasan teguran: 'Lampiran estimasi belum lengkap' -> Klik <strong>Kirim Teguran</strong>. 3. Verifikasi: Status item berubah menjadi 'Rejected' (merah)."
+                  },
+                  {
+                        "code": "KB-013",
+                        "tag": "Strict Fix",
+                        "type": "edge",
+                        "desc": "<strong>[Strict Reject & Fix Staf]</strong> 1. Login sebagai Staf pengaju -> Buka dokumen kasbon yang itemnya ditolak. 2. Klik ikon teguran merah pada baris item -> Centang SEMUA poin checklist perbaikan -> Klik tombol <strong>Simpan Perbaikan</strong>. 3. Verifikasi: Status item pulih kembali menjadi pending/submitted."
+                  },
+                  {
+                        "code": "KB-014",
+                        "tag": "Strict Lock",
+                        "type": "security",
+                        "desc": "<strong>[Strict Reject Lock]</strong> 1. Pada modal popup teguran perbaikan item, centang hanya sebagian poin (jangan centang semua poin). 2. Klik tombol Simpan. 3. Verifikasi: Sistem menolak submit ulang dan memberi peringatan 'Wajib menyelesaikan semua poin perbaikan'."
+                  },
+                  {
+                        "code": "KB-015",
+                        "tag": "Gate Lock",
+                        "type": "edge",
+                        "desc": "<strong>[Gerbang Tabel 2 Terkunci]</strong> 1. Amati Tabel 2 (Pencairan Dana) saat masih ada item di Tabel 1 yang statusnya Pending atau Rejected (Tabel 2 dalam kondisi abu-abu/terkunci). 2. Klik centang hijau Approve pada 100% item di Tabel 1 -> Verifikasi: Tabel 2 otomatis terbuka dan siap diproses."
+                  },
+                  {
+                        "code": "KB-016",
+                        "tag": "Finance Role",
+                        "type": "normal",
+                        "desc": "<strong>[Finance Disbursement Form]</strong> 1. Login sebagai Finance / Manager -> Buka bagian Tabel 2 Pencairan. 2. Pilih Bank Sumber (misal: <strong>Mandiri</strong>), pilih Tanggal Transfer, upload foto struk transfer -> Klik tombol hijau <strong>Approve Pencairan</strong>. 3. Verifikasi: Status pencairan di Tabel 2 berubah menjadi 'Disbursed'."
+                  },
+                  {
+                        "code": "KB-017",
+                        "tag": "Security",
+                        "type": "security",
+                        "desc": "<strong>[Insufficient Balance Check]</strong> 1. Di Tabel 2 Pencairan, pilih rekening bank yang saldonya lebih kecil dari nominal kasbon (misal pilih bank bersaldo Rp 500.000 untuk mencairkan kasbon Rp 10.000.000). 2. Klik tombol Approve Pencairan. 3. Verifikasi: Sistem menolak dengan dialog alarm peringatan 'Saldo Bank Tidak Mencukupi'."
+                  },
+                  {
+                        "code": "KB-018",
+                        "tag": "Finalize",
+                        "type": "normal",
+                        "desc": "<strong>[Setujui Final Kasbon]</strong> 1. Setelah Tabel 1 dan Tabel 2 selesai disetujui, klik tombol biru <strong>Setujui Final Kasbon</strong> di pojok kanan bawah. 2. Verifikasi: Status dokumen berubah permanen menjadi 'Completed' dan saldo hutang kasbon staf resmi bertambah."
+                  }
+            ]
+      },
+      {
+            "id": "modul-4",
+            "num": "04",
+            "title": "Settlement / Pengeluaran (Form Expense & Pajak)",
+            "desc": "Pengujian form input nota pengeluaran detail, kalkulasi pajak PPN/PPh, multi-lampiran bukti struk, dan pencairan nombok.",
+            "cases": [
+                  {
+                        "code": "ST-001",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Buat Settlement Single]</strong> 1. Buka Sidebar -> Klik menu <strong>SETTLEMENTS</strong>. 2. Klik tombol biru <strong>+ Buat Settlement</strong> di pojok kanan atas. 3. Pilih radio <strong>Single</strong> -> Pilih Tahun: <strong>2026</strong> -> Klik tombol biru <strong>Buat</strong>. 4. Verifikasi: Layar langsung masuk ke halaman detail form Settlement baru."
+                  },
+                  {
+                        "code": "ST-002",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Buat Settlement Batch]</strong> 1. Buka Sidebar -> Klik menu <strong>SETTLEMENTS</strong>. 2. Klik tombol biru <strong>+ Buat Settlement</strong>. 3. Pilih radio <strong>Batch</strong> -> Masukkan Judul Kegiatan: <strong>'Operasional Kantor Cabang'</strong> -> Pilih Tanggal. 4. Klik <strong>Buat</strong>. 5. Verifikasi: Dokumen settlement Batch berhasil terbuat."
+                  },
+                  {
+                        "code": "ST-003",
+                        "tag": "Search",
+                        "type": "normal",
+                        "desc": "<strong>[Filter & Search Debounce]</strong> 1. Buka menu <strong>SETTLEMENTS</strong>. 2. Ketik kata 'Cabang' di kolom pencarian atas. 3. Pada filter dropdown status, pilih 'Draft'. 4. Verifikasi: Daftar dokumen langsung menyaring hasil pencarian secara instan dan tepat."
+                  },
+                  {
+                        "code": "ST-004",
+                        "tag": "Role Guard",
+                        "type": "ui",
+                        "desc": "<strong>[Export Excel & PDF Guard]</strong> 1. Buka dokumen settlement berstatus 'Draft' -> Verifikasi: Tombol Export di pojok kanan atas disembunyikan/disabled. 2. Buka dokumen yang sudah berstatus 'Completed' -> Verifikasi: Tombol Export Excel & PDF muncul aktif di pojok kanan atas."
+                  },
+                  {
+                        "code": "ST-005",
+                        "tag": "Role Permission",
+                        "type": "security",
+                        "desc": "<strong>[Bulk Delete Berbasis Role]</strong> 1. Login sebagai Staf -> Masuk menu Settlements -> Verifikasi staf hanya diizinkan menghapus dokumen berstatus 'Draft'. 2. Login sebagai Manager -> Verifikasi Manager memiliki opsi menghapus dokumen status apa pun dengan konfirmasi dialog."
+                  },
+                  {
+                        "code": "ST-006",
+                        "tag": "Math Calc",
+                        "type": "normal",
+                        "desc": "<strong>[Form Tambah Expense Detail]</strong> 1. Di Tabel 1 Settlement, klik tombol hijau <strong>+ Tambah Pengeluaran</strong>. 2. Isi Form: Pilih Tanggal, Pilih Kategori: 'ATK & Perlengkapan', Nama Pengeluaran: 'Kertas HVS A4', Qty: <strong>5</strong>, Satuan: 'Rim', Harga: <strong>50.000</strong>. 3. Verifikasi: Kolom Subtotal otomatis terhitung <strong>Rp 250.000</strong>."
+                  },
+                  {
+                        "code": "ST-007",
+                        "tag": "Tax Calc",
+                        "type": "edge",
+                        "desc": "<strong>[Pajak PPN 11% Toggle]</strong> 1. Pada form tambah pengeluaran, aktifkan switch toggle <strong>Kena Pajak</strong>. 2. Pilih jenis pajak: <strong>PPN 11%</strong>. 3. Verifikasi: Nominal PPN otomatis terhitung <strong>Rp 27.500</strong> dan Total Akhir belanja menjadi <strong>Rp 277.500</strong>."
+                  },
+                  {
+                        "code": "ST-008",
+                        "tag": "Tax Calc",
+                        "type": "edge",
+                        "desc": "<strong>[Pajak PPh 23 Potongan]</strong> 1. Pada form tambah pengeluaran, aktifkan toggle Pajak -> Pilih jenis pajak: <strong>PPh 23 (2%)</strong>. 2. Verifikasi: Nilai potongan pajak otomatis dihitung sebagai pengurang dan total yang dibayarkan berkurang sesuai rumus potongan."
+                  },
+                  {
+                        "code": "ST-009",
+                        "tag": "Multi Upload",
+                        "type": "normal",
+                        "desc": "<strong>[Multi-Image Evidence Upload]</strong> 1. Pada form pengeluaran, klik area hijau <strong>Upload Bukti Struk</strong>. 2. Pilih 2 atau 3 file foto struk/PDF sekaligus. 3. Verifikasi: Seluruh thumbnail gambar struk muncul di form dengan tombol ikon sampah merah untuk hapus per file."
+                  },
+                  {
+                        "code": "ST-010",
+                        "tag": "Image Viewer",
+                        "type": "ui",
+                        "desc": "<strong>[Image Preview Zoom & Rotate]</strong> 1. Klik salah satu thumbnail gambar bukti struk yang telah diunggah. 2. Muncul modal preview gambar besar -> Coba klik tombol Zoom In (+), Zoom Out (-), dan tombol Putar/Rotasi 90°. 3. Verifikasi: Tampilan gambar merespons mulus sesuai tombol interaksi."
+                  },
+                  {
+                        "code": "ST-011",
+                        "tag": "Validation",
+                        "type": "security",
+                        "desc": "<strong>[Validasi Wajib Bukti Struk]</strong> 1. Tambah baris pengeluaran tanpa melampirkan foto bukti struk sama sekali. 2. Coba klik tombol <strong>Submit Settlement</strong>. 3. Verifikasi: Sistem menolak submit dan menampilkan pesan error peringatan 'Setiap baris belanja wajib melampirkan bukti struk'."
+                  },
+                  {
+                        "code": "ST-012",
+                        "tag": "Math Calc",
+                        "type": "normal",
+                        "desc": "<strong>[Warning Box Proyeksi Dompet]</strong> 1. Pada staf yang memiliki kasbon Rp 2.000.000, input total nota belanja yang disetujui sebesar Rp 1.200.000. 2. Periksa kartu Proyeksi Dompet di atas. 3. Verifikasi: Kotak Proyeksi menampilkan status hijau bertuliskan <strong>'Sisa Kasbon Rp 800.000'</strong>."
+                  },
+                  {
+                        "code": "ST-013",
+                        "tag": "Reimbursement",
+                        "type": "edge",
+                        "desc": "<strong>[Kondisi Nombok (Reimbursement)]</strong> 1. Pada staf yang memiliki kasbon Rp 2.000.000, input total nota belanja sebesar Rp 2.500.000. 2. Periksa kartu Proyeksi Dompet. 3. Verifikasi: Kotak Proyeksi menampilkan status merah bertuliskan <strong>'Nombok / Reimbursement Rp 500.000'</strong> dan Tabel 2 (Pencairan Nombok) otomatis aktif."
+                  },
+                  {
+                        "code": "ST-014",
+                        "tag": "Role Guard",
+                        "type": "security",
+                        "desc": "<strong>[Pencegatan Kategori Unapproved]</strong> 1. Coba klik centang approve pada baris pengeluaran yang kategorinya masih berstatus Pending/Unapproved di menu Kategori. 2. Verifikasi: Sistem menolak approve dan menampilkan pesan 'Kategori harus disahkan terlebih dahulu'."
+                  },
+                  {
+                        "code": "ST-015",
+                        "tag": "Strict Fix",
+                        "type": "edge",
+                        "desc": "<strong>[Strict Reject & Fix Staf]</strong> 1. Manager klik tolak (silang merah) pada salah satu nota pengeluaran -> Ketik catatan teguran. 2. Staf buka dialog teguran -> Centang semua poin perbaikan -> Klik Simpan. 3. Verifikasi: Baris pengeluaran pulih dan siap diapprove ulang oleh Manager."
+                  },
+                  {
+                        "code": "ST-016",
+                        "tag": "Finalize",
+                        "type": "normal",
+                        "desc": "<strong>[Final Settlement]</strong> 1. Pastikan seluruh nota belanja di Tabel 1 sudah diapprove dan Tabel 2 (jika ada nombok) selesai diproses. 2. Klik tombol biru <strong>Setujui Final Settlement</strong> di pojok kanan bawah. 3. Verifikasi: Status dokumen berubah menjadi 'Completed' dan riwayat mutasi otomatis terposting."
+                  }
+            ]
+      },
+      {
+            "id": "modul-5",
+            "num": "05",
+            "title": "Standalone Return (Pelunasan Kasbon Mandiri)",
+            "desc": "Pengujian pengembalian sisa kasbon langsung tanpa melalui settlement panjang.",
+            "cases": [
+                  {
+                        "code": "RT-001",
+                        "tag": "Dialog Flow",
+                        "type": "normal",
+                        "desc": "<strong>[Buka Form Pengembalian Mandiri]</strong> 1. Buka Sidebar -> Menu <strong>KASBON</strong> -> Klik tombol biru <strong>+ Buat Kasbon</strong> di kanan atas -> Pada popup dialog 'Perhatian: Outstanding Kasbon', klik <strong>Kembalikan Dana Sekarang</strong>. 2. Verifikasi: Modal dialog 'Pengembalian Dana Langsung' terbuka."
+                  },
+                  {
+                        "code": "RT-002",
+                        "tag": "UI State",
+                        "type": "ui",
+                        "desc": "<strong>[Dropdown Rekening Bank Penerima]</strong> 1. Di dalam form 'Pengembalian Dana Langsung', klik dropdown <strong>Sumber Bank</strong>. 2. Verifikasi: Daftar rekening bank kantor muncul lengkap dengan informasi saldo fisik masing-masing bank."
+                  },
+                  {
+                        "code": "RT-003",
+                        "tag": "Auto Format",
+                        "type": "normal",
+                        "desc": "<strong>[Auto-Format Currency]</strong> 1. Ketik angka '1500000' di kolom nominal pengembalian. 2. Verifikasi: Teks otomatis terformat dengan separator ribuan menjadi <strong>Rp 1.500.000</strong>."
+                  },
+                  {
+                        "code": "RT-004",
+                        "tag": "Validation",
+                        "type": "edge",
+                        "desc": "<strong>[Validasi Nominal < Rp 100]</strong> 1. Pada kolom nominal pengembalian, masukkan angka '0' atau '50'. 2. Klik tombol <strong>Simpan</strong>. 3. Verifikasi: Sistem menolak dan memunculkan notifikasi error merah 'Nominal minimal Rp 100'."
+                  },
+                  {
+                        "code": "RT-005",
+                        "tag": "Validation",
+                        "type": "security",
+                        "desc": "<strong>[Validasi Bukti Transfer]</strong> 1. Masukkan nominal Rp 500.000 tanpa memilih file bukti transfer. 2. Klik tombol <strong>Simpan</strong>. 3. Verifikasi: Sistem menolak dengan notifikasi 'Bukti transfer wajib diunggah'."
+                  },
+                  {
+                        "code": "RT-006",
+                        "tag": "UI State",
+                        "type": "ui",
+                        "desc": "<strong>[Visual Tombol Upload Sukses]</strong> 1. Klik area hijau <strong>Pilih File Bukti Transfer</strong> -> Pilih 1 foto struk atau file PDF transfer. 2. Verifikasi: Tombol berubah warna hijau pekat dan menampilkan nama file yang diunggah."
+                  },
+                  {
+                        "code": "RT-007",
+                        "tag": "Integration",
+                        "type": "integration",
+                        "desc": "<strong>[Eksekusi Sukses & Sinkronisasi]</strong> 1. Isi lengkap: Pilih Sumber Bank <strong>Mandiri</strong>, Pilih Kasbon bersisa, Nominal: <strong>100.000</strong>, Upload bukti -> Klik tombol <strong>Simpan</strong>. 2. Buka tab <strong>Bank Advance</strong> -> Verifikasi: Hutang kasbon staf berkurang Rp 100.000 dan saldo virtual Bank Advance staf pulih bertambah kembali Rp 100.000 secara real-time."
+                  }
+            ]
+      },
+      {
+            "id": "modul-6",
+            "num": "06",
+            "title": "Manajemen Kategori & Kanban Tabular",
+            "desc": "Pengujian struktur Kategori Utama/Sub, approval pending, reorder drag-drop, dan papan Kanban.",
+            "cases": [
+                  {
+                        "code": "CAT-001",
+                        "tag": "Hierarki UI",
+                        "type": "ui",
+                        "desc": "<strong>[Hierarki Kategori]</strong> 1. Buka Sidebar -> Klik menu <strong>Kategori</strong>. 2. Klik salah satu Kategori Utama. 3. Verifikasi: Expansion tile terbuka menampilkan daftar sub-kategori di dalamnya."
+                  },
+                  {
+                        "code": "CAT-002",
+                        "tag": "Section Pending",
+                        "type": "normal",
+                        "desc": "<strong>[Section Kategori Pending]</strong> 1. Buka menu Kategori. 2. Jika ada kategori baru diajukan staf, periksa bagian atas layar. 3. Verifikasi: Muncul kotak oranye 'Kategori Pending' dengan tanda tree |-."
+                  },
+                  {
+                        "code": "CAT-003",
+                        "tag": "Validation Guard",
+                        "type": "security",
+                        "desc": "<strong>[Pencegatan Approve Sub-Kategori]</strong> 1. Saat Kategori Utama & Sub-kategori sama-sama pending, coba klik tombol approve sub. 2. Verifikasi: Tombol disabled dengan pesan 'Approve kategori utama dulu'."
+                  },
+                  {
+                        "code": "CAT-004",
+                        "tag": "Approval Flow",
+                        "type": "normal",
+                        "desc": "<strong>[Approve Berurutan]</strong> 1. Klik tombol hijau Approve pada Kategori Utama. 2. Verifikasi: Tombol approve pada sub-kategori langsung menyala aktif dan siap diklik."
+                  },
+                  {
+                        "code": "CAT-005",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Form Tambah Kategori Utama]</strong> 1. Buka menu Kategori -> Klik tombol <strong>+ Tambah Kategori</strong>. 2. Pilih Radio 'Kategori Utama' -> Nama: 'Beban Operasional' -> Klik Simpan. 3. Verifikasi: Kategori utama baru terdaftar."
+                  },
+                  {
+                        "code": "CAT-006",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Form Tambah Sub-Kategori]</strong> 1. Klik + Tambah Kategori -> Pilih Radio 'Sub Kategori' -> Pilih Utama: 'Beban Operasional' -> Nama: 'Konsumsi Rapat'. 2. Simpan. 3. Verifikasi: Sub-kategori baru terdaftar di bawah induknya."
+                  },
+                  {
+                        "code": "CAT-007",
+                        "tag": "Validation",
+                        "type": "edge",
+                        "desc": "<strong>[Validasi Sub Kategori Tanpa Parent]</strong> 1. Pilih Radio 'Sub Kategori' -> Kosongkan pilihan Kategori Utama. 2. Klik Simpan. 3. Verifikasi: Sistem menolak 'Pilih Kategori Utama terlebih dahulu'."
+                  },
+                  {
+                        "code": "CAT-008",
+                        "tag": "Data Safety",
+                        "type": "security",
+                        "desc": "<strong>[Hapus Kategori Berelasi]</strong> 1. Coba hapus kategori yang sudah pernah digunakan pada nota expense. 2. Verifikasi: Muncul dialog peringatan ketat integritas database menolak penghapusan."
+                  },
+                  {
+                        "code": "CAT-009",
+                        "tag": "Navigation",
+                        "type": "normal",
+                        "desc": "<strong>[Buka Kategori Tabular]</strong> 1. Buka menu Kategori -> Klik tombol <strong>Kategori Tabular</strong> di kanan atas. 2. Verifikasi: Layar konfigurasi urutan kolom Excel tahunan terbuka."
+                  },
+                  {
+                        "code": "CAT-010",
+                        "tag": "Drag & Drop",
+                        "type": "ui",
+                        "desc": "<strong>[Drag-and-Drop Reorder]</strong> 1. Tahan handle ikon drag pada Kategori urutan 3, geser ke posisi 1. 2. Verifikasi: Badge nomor urut biru seketika berganti menjadi angka 1."
+                  },
+                  {
+                        "code": "CAT-011",
+                        "tag": "Kanban UI",
+                        "type": "ui",
+                        "desc": "<strong>[Buka Dialog Kanban]</strong> 1. Buka Kategori Tabular -> Klik tombol <strong>Atur Grup & Urutan</strong>. 2. Verifikasi: Papan Kanban interaktif terbuka (horizontal scroll di laptop, vertikal di HP)."
+                  },
+                  {
+                        "code": "CAT-012",
+                        "tag": "Kanban Cycle",
+                        "type": "normal",
+                        "desc": "<strong>[Pindah Grup via Panah Kanan]</strong> 1. Klik ikon panah kanan (->) pada salah satu kartu kategori di Kanban. 2. Verifikasi: Kartu berpindah ke kolom grup berikutnya di posisi paling bawah."
+                  },
+                  {
+                        "code": "CAT-013",
+                        "tag": "Fallback Engine",
+                        "type": "edge",
+                        "desc": "<strong>[Orphan Fallback 'LAINNYA']</strong> 1. Periksa kategori yang tidak memiliki grup induk di Kanban. 2. Verifikasi: Ditampung otomatis pada kolom abu-abu 'LAINNYA' di ujung kanan tanpa crash."
+                  },
+                  {
+                        "code": "CAT-014",
+                        "tag": "Save Engine",
+                        "type": "normal",
+                        "desc": "<strong>[Simpan Perubahan Tabular]</strong> 1. Klik tombol hijau besar <strong>Simpan Perubahan</strong> di Kanban Tabular. 2. Verifikasi: Muncul loading spinner blocking dan susunan kolom tersimpan ke database."
+                  }
+            ]
+      },
+      {
+            "id": "modul-7",
+            "num": "07",
+            "title": "Revenue Management (Pemasukan & Pendapatan)",
+            "desc": "Pengujian form pemasukan uang masuk, bukti setor, dan pengaruh langsung ke rekening bank.",
+            "cases": [
+                  {
+                        "code": "REV-001",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Form Tambah Revenue]</strong> 1. Buka Sidebar -> Masuk ke <strong>Revenue Management</strong>. 2. Klik tombol hijau <strong>+ Tambah Pemasukan</strong> -> Kategori: 'Donasi / Hibah', Pilih Bank: <strong>Mandiri</strong>, Nominal: <strong>25.000.000</strong>, Upload Bukti Transfer. 3. Klik tombol biru <strong>Simpan</strong>. 4. Verifikasi: Transaksi baru muncul di tabel pemasukan."
+                  },
+                  {
+                        "code": "REV-002",
+                        "tag": "Integration",
+                        "type": "integration",
+                        "desc": "<strong>[Efek ke Bank Cash]</strong> 1. Buka Sidebar -> Klik menu <strong>BANK</strong> -> tab <strong>Bank Cash</strong>. 2. Cek kartu Bank Mandiri. 3. Verifikasi: Saldo fisik Bank Mandiri bertambah tepat Rp 25.000.000."
+                  },
+                  {
+                        "code": "REV-003",
+                        "tag": "Integration",
+                        "type": "integration",
+                        "desc": "<strong>[Efek ke Logbook]</strong> 1. Buka Detail Bank Mandiri -> Klik tombol putih <strong>Riwayat Aktivitas / Log Book</strong>. 2. Verifikasi: Tercatat mutasi transaksi Pemasukan (Revenue) hijau sebesar <strong>+ Rp 25.000.000</strong>."
+                  },
+                  {
+                        "code": "REV-004",
+                        "tag": "Validation",
+                        "type": "edge",
+                        "desc": "<strong>[Validasi Nominal < Rp 100]</strong> 1. Pada form Tambah Pemasukan, masukkan nominal '0' atau '50'. 2. Klik tombol Simpan. 3. Verifikasi: Sistem menolak dengan pesan validasi error merah 'Nominal minimal Rp 100'."
+                  },
+                  {
+                        "code": "REV-005",
+                        "tag": "Filter",
+                        "type": "normal",
+                        "desc": "<strong>[Filter Tahun & Kategori]</strong> 1. Buka menu Revenue Management. 2. Pilih dropdown Tahun: 2026 dan Kategori tertentu. 3. Verifikasi: Tabel rekap pemasukan menyaring data dengan presisi."
+                  },
+                  {
+                        "code": "REV-006",
+                        "tag": "Math Calc",
+                        "type": "edge",
+                        "desc": "<strong>[Edit Revenue]</strong> 1. Edit nominal revenue dari Rp 25.000.000 menjadi Rp 30.000.000 -> Simpan. 2. Verifikasi: Saldo rekening penerima terkoreksi bertambah selisih Rp 5.000.000."
+                  },
+                  {
+                        "code": "REV-007",
+                        "tag": "Data Safety",
+                        "type": "security",
+                        "desc": "<strong>[Hapus Revenue]</strong> 1. Hapus salah satu data revenue Rp 5.000.000. 2. Verifikasi: Saldo bank penerima terpotong kembali Rp 5.000.000 dan logbook mencatat penyesuaian."
+                  }
+            ]
+      },
+      {
+            "id": "modul-8",
+            "num": "08",
+            "title": "Tax Management, Combine Groups & Tabel NDPV",
+            "desc": "Pengujian manajemen tarif pajak, pengelompokan pajak tahunan, dan kalkulator tabel NDPV.",
+            "cases": [
+                  {
+                        "code": "TAX-001",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Form Tambah Pajak]</strong> 1. Buka Sidebar -> Masuk ke <strong>Tax Management</strong>. 2. Klik <strong>+ Tambah Pajak</strong> -> Nama: 'PPh 21 Pegawai', Persentase: 5%, Tahun: 2026 -> Klik <strong>Simpan</strong>. 3. Verifikasi: Pajak baru terdaftar."
+                  },
+                  {
+                        "code": "TAX-002",
+                        "tag": "Grouping",
+                        "type": "normal",
+                        "desc": "<strong>[Combine Groups Pajak]</strong> 1. Di menu Tax Management, buka fitur <strong>Combine Groups</strong>. 2. Kelompokkan pajak PPh 21 dan PPh 23 ke dalam 1 grup tahunan -> Klik Simpan. 3. Verifikasi: Struktur grup tersimpan."
+                  },
+                  {
+                        "code": "TAX-003",
+                        "tag": "NDPV Calc",
+                        "type": "edge",
+                        "desc": "<strong>[Dialog Tabel NDPV]</strong> 1. Di menu Tax Management, buka dialog tabel NDPV. 2. Verifikasi: Kolom Nilai Dasar Pengenaan Pajak (DPP), Tarif Pajak, dan Pajak Terutang terhitung akurat sesuai rumus."
+                  },
+                  {
+                        "code": "TAX-004",
+                        "tag": "Integration",
+                        "type": "integration",
+                        "desc": "<strong>[Integrasi ke Laporan Tahunan Sheet 2]</strong> 1. Buka Laporan Tahunan (Annual Report) Sheet 2. 2. Verifikasi: Baris pajak terhitung dan terkelompokkan persis sesuai konfigurasi Tax Management."
+                  }
+            ]
+      },
+      {
+            "id": "modul-9",
+            "num": "09",
+            "title": "Dividend Management (Bagi Hasil & Dividen)",
+            "desc": "Pengujian pembagian dividen ke pemegang saham, pemotongan kas bank, dan bukti transfer.",
+            "cases": [
+                  {
+                        "code": "DIV-001",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Form Bagi Dividen]</strong> 1. Buka Sidebar -> Masuk ke <strong>Dividend Management</strong>. 2. Klik tombol hijau <strong>+ Bagi Dividen</strong> -> Nama Penerima: 'Pemegang Saham A', Pilih Bank Sumber: <strong>Mandiri</strong>, Nominal: <strong>10.000.000</strong>, Upload Bukti Transfer. 3. Klik tombol biru <strong>Simpan</strong>."
+                  },
+                  {
+                        "code": "DIV-002",
+                        "tag": "Integration",
+                        "type": "integration",
+                        "desc": "<strong>[Efek ke Bank Cash]</strong> 1. Buka Sidebar -> Klik menu <strong>BANK</strong> -> tab <strong>Bank Cash</strong>. 2. Cek saldo Bank Mandiri. 3. Verifikasi: Saldo fisik Bank Mandiri otomatis terpotong Rp 10.000.000."
+                  },
+                  {
+                        "code": "DIV-003",
+                        "tag": "Integration",
+                        "type": "integration",
+                        "desc": "<strong>[Efek ke Logbook]</strong> 1. Buka Detail Bank Mandiri -> Klik Riwayat Aktivitas / Log Book. 2. Verifikasi: Tercatat mutasi Pengeluaran Dividen merah sebesar <strong>- Rp 10.000.000</strong>."
+                  },
+                  {
+                        "code": "DIV-004",
+                        "tag": "Security",
+                        "type": "security",
+                        "desc": "<strong>[Validasi Saldo Kurang]</strong> 1. Pilih rekening dengan saldo Rp 5.000.000 untuk membagikan dividen Rp 15.000.000. 2. Klik Simpan. 3. Verifikasi: Sistem menolak dengan notifikasi 'Saldo tidak mencukupi'."
+                  }
+            ]
+      },
+      {
+            "id": "modul-10",
+            "num": "10",
+            "title": "Asset Management (Inventaris & Penyusutan)",
+            "desc": "Pengujian form aset, umur ekonomis, penyusutan otomatis, dan disposal.",
+            "cases": [
+                  {
+                        "code": "AST-001",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Form Tambah Aset]</strong> 1. Buka Sidebar -> Masuk ke <strong>Asset Management</strong>. 2. Klik <strong>+ Tambah Aset</strong> -> Nama: 'MacBook Pro M3', Tgl: 1 Feb 2026, Harga: Rp 30.000.000, Umur: 4 Tahun, Residu: Rp 2.000.000 -> Simpan."
+                  },
+                  {
+                        "code": "AST-002",
+                        "tag": "Math Calc",
+                        "type": "normal",
+                        "desc": "<strong>[Kalkulasi Penyusutan Otomatis]</strong> 1. Buka tabel rincian aset di Asset Management. 2. Verifikasi: Sistem menghitung nilai penyusutan depresiasi per bulan/tahun secara otomatis tanpa manual."
+                  },
+                  {
+                        "code": "AST-003",
+                        "tag": "Math Calc",
+                        "type": "edge",
+                        "desc": "<strong>[Nilai Buku Terkini]</strong> 1. Cek kolom Nilai Buku pada tabel aset. 2. Verifikasi: Nilai Buku = Harga Perolehan - Akumulasi Penyusutan."
+                  },
+                  {
+                        "code": "AST-004",
+                        "tag": "Disposal",
+                        "type": "normal",
+                        "desc": "<strong>[Penghapusan / Disposal Aset]</strong> 1. Klik opsi <strong>Disposal / Hapus Aset</strong> -> Masukkan nilai jual sisa (jika ada). 2. Simpan. 3. Verifikasi: Status aset berubah menjadi 'Disposed'."
+                  }
+            ]
+      },
+      {
+            "id": "modul-11",
+            "num": "11",
+            "title": "User Management & Hak Akses (Manager Only)",
+            "desc": "Pengujian pembuatan akun, assign role, ganti password user, dan status aktif/nonaktif.",
+            "cases": [
+                  {
+                        "code": "USR-001",
+                        "tag": "Role Guard",
+                        "type": "security",
+                        "desc": "<strong>[Lihat Account List]</strong> 1. Login sebagai Manager -> Buka Sidebar menu <strong>Pengaturan</strong>. 2. Klik <strong>Lihat Account List</strong> di panel Manager. 3. Verifikasi: Daftar seluruh akun pengguna muncul."
+                  },
+                  {
+                        "code": "USR-002",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Form Buat User Baru]</strong> 1. Di panel Account List, klik tombol <strong>+ Tambah Pengguna</strong>. 2. Isi Username, Nama, Email, Password, Role (Staff/Manager/Finance/Admin), Perusahaan -> Simpan. 3. Verifikasi: User baru terdaftar."
+                  },
+                  {
+                        "code": "USR-003",
+                        "tag": "Admin Action",
+                        "type": "normal",
+                        "desc": "<strong>[Form Edit User]</strong> 1. Klik ikon edit pada salah satu akun user di daftar. 2. Ubah Role atau Reset Password -> Simpan. 3. Verifikasi: Data akun berhasil ter-update."
+                  },
+                  {
+                        "code": "USR-004",
+                        "tag": "Security",
+                        "type": "security",
+                        "desc": "<strong>[Nonaktifkan User]</strong> 1. Ubah status akun user menjadi 'Nonaktif' -> Simpan. 2. Coba logout dan login menggunakan akun tersebut. 3. Verifikasi: Sistem menolak login akun nonaktif."
+                  },
+                  {
+                        "code": "USR-005",
+                        "tag": "UI Detail",
+                        "type": "ui",
+                        "desc": "<strong>[User Detail Dialog]</strong> 1. Klik nama user pada daftar akun. 2. Verifikasi: Modal profil user terbuka menampilkan ringkasan peran, email, dan tanggal bergabung."
+                  }
+            ]
+      },
+      {
+            "id": "modul-12",
+            "num": "12",
+            "title": "Company Management & Multi-Tenancy",
+            "desc": "Pengujian entitas perusahaan, logo, switch active company, dan isolasi data.",
+            "cases": [
+                  {
+                        "code": "CMP-001",
+                        "tag": "Dialog UI",
+                        "type": "ui",
+                        "desc": "<strong>[Kelola Perusahaan Dialog]</strong> 1. Login sebagai Admin/Manager -> Buka Sidebar menu <strong>Pengaturan</strong> -> Klik <strong>Kelola Perusahaan</strong>. 2. Verifikasi: Daftar PT/Yayasan yang terdaftar ditampilkan."
+                  },
+                  {
+                        "code": "CMP-002",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Form Tambah Perusahaan Baru]</strong> 1. Di modal Kelola Perusahaan, klik <strong>+ Tambah Perusahaan</strong>. 2. Isi Nama: 'PT Inovasi Solusi', Kode: 'INS', Alamat, Upload Logo -> Klik Simpan. 3. Verifikasi: Perusahaan baru berhasil dibuat."
+                  },
+                  {
+                        "code": "CMP-003",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Form Edit Perusahaan]</strong> 1. Klik tombol Edit pada perusahaan -> Ubah nama atau alamat -> Klik Simpan. 2. Verifikasi: Nama perusahaan langsung ter-update di header aplikasi."
+                  },
+                  {
+                        "code": "CMP-004",
+                        "tag": "Multi-Tenant",
+                        "type": "security",
+                        "desc": "<strong>[Isolasi Data Antar-Perusahaan]</strong> 1. Login ke Perusahaan A -> Catat data transaksi. 2. Pindah/Switch ke Perusahaan B -> Verifikasi: Data Perusahaan A TIDAK PERNAH BOCOR ke Perusahaan B."
+                  }
+            ]
+      },
+      {
+            "id": "modul-13",
+            "num": "13",
+            "title": "Report Summary (Laporan Bulanan)",
+            "desc": "Pengujian tabel 12 bulan, sticky scroll headers, dan kalkulasi client-side.",
+            "cases": [
+                  {
+                        "code": "RP-001",
+                        "tag": "UI Matrix",
+                        "type": "ui",
+                        "desc": "<strong>[Tampilan Matriks 12 Bulan]</strong> 1. Buka Sidebar -> Klik menu <strong>Laporan</strong> -> tab <strong>Report Summary</strong>. 2. Verifikasi: Tabel membentang dari Jan s/d Des, diapit kolom Kategori di kiri dan TOTAL di kanan."
+                  },
+                  {
+                        "code": "RP-002",
+                        "tag": "Sticky Engine",
+                        "type": "ui",
+                        "desc": "<strong>[Diagonal Clamping Sync]</strong> 1. Buka menu Laporan -> tab Report Summary. 2. Scroll tabel ke arah kanan dan bawah. 3. Verifikasi: Kolom Kategori tetap terkunci di kiri, Baris Bulan terkunci di atas, dan Grand Total terkunci di bawah."
+                  },
+                  {
+                        "code": "RP-003",
+                        "tag": "Math Calc",
+                        "type": "edge",
+                        "desc": "<strong>[Kalkulasi Grand Total Client-Side]</strong> 1. Amati baris paling bawah (GRAND TOTAL) di Report Summary. 2. Verifikasi: Nilai grand total adalah hasil penjumlahan akurat dari Jan s/d Des tanpa selisih 1 rupiah pun."
+                  },
+                  {
+                        "code": "RP-004",
+                        "tag": "UI Theme",
+                        "type": "ui",
+                        "desc": "<strong>[Zebra Striping & Indentasi]</strong> 1. Amati tampilan baris tabel Report Summary. 2. Verifikasi: Baris ganjil-genap memiliki warna selang-seling, dan sub-kategori memiliki indentasi masuk ke dalam."
+                  },
+                  {
+                        "code": "RP-005",
+                        "tag": "Cache Info",
+                        "type": "normal",
+                        "desc": "<strong>[Cache Info Badge]</strong> 1. Periksa kotak label Cache Info di header laporan Report Summary. 2. Verifikasi: Menampilkan status 'CACHE' atau 'REFRESH' beserta jam pengambilan data."
+                  },
+                  {
+                        "code": "RP-006",
+                        "tag": "Export Name",
+                        "type": "normal",
+                        "desc": "<strong>[Export Naming Format]</strong> 1. Pilih rentang tanggal 1 Jan 2026 s/d 31 Jan 2026 -> Klik Export PDF. 2. Verifikasi: File yang terunduh bernama format 'summary_20260101_20260131.pdf'."
+                  }
+            ]
+      },
+      {
+            "id": "modul-14",
+            "num": "14",
+            "title": "Annual Report Engine (Multi-Tabel & Zoom)",
+            "desc": "Pengujian mahadata tahunan, Tabel 1-4, Tabel 4A-4D, Beban Bank, dan Zoom Engine.",
+            "cases": [
+                  {
+                        "code": "AR-001",
+                        "tag": "Zoom Engine",
+                        "type": "ui",
+                        "desc": "<strong>[Zoom Engine (Ctrl + Mouse Wheel)]</strong> 1. Buka Sidebar -> Klik menu <strong>Laporan</strong> -> tab <strong>Annual Report</strong>. 2. Tekan tahan tombol Ctrl lalu putar scroll mouse ke bawah. 3. Verifikasi: Tabel mengecil bertahap hingga batas 52%. Putar ke atas untuk membesar 100%."
+                  },
+                  {
+                        "code": "AR-002",
+                        "tag": "Scroll Sync",
+                        "type": "ui",
+                        "desc": "<strong>[Massive Horizontal Scroll Sync]</strong> 1. Buka Annual Report. 2. Geser scrollbar horizontal pada Tabel 1. 3. Verifikasi: Seluruh tabel di bawahnya (Tabel 2 s/d Tabel 10) otomatis bergeser sejajar sinkron."
+                  },
+                  {
+                        "code": "AR-003",
+                        "tag": "Routing",
+                        "type": "normal",
+                        "desc": "<strong>[Direct Reference Routing]</strong> 1. Klik salah satu ID transaksi pada sel tabel laporan tahunan. 2. Verifikasi: Aplikasi langsung melompat membuka layar Detail transaksi bersangkutan."
+                  },
+                  {
+                        "code": "AR-004",
+                        "tag": "Sheet 1",
+                        "type": "normal",
+                        "desc": "<strong>[Sheet 1 (Pemasukan & Beban Langsung)]</strong> 1. Buka Annual Report -> Pilih Sheet 1. 2. Verifikasi: Tabel Pemasukan, Biaya Operasi, dan Biaya Riset menampilkan total per bulan dengan akurat."
+                  },
+                  {
+                        "code": "AR-005",
+                        "tag": "Sheet 2",
+                        "type": "edge",
+                        "desc": "<strong>[Sheet 2 (Pajak & Potongan - Tabel 4A-4D)]</strong> 1. Buka Annual Report -> Pilih Sheet 2. 2. Verifikasi: Tabel 4A (PPh 21), 4B (PPh 23), 4C (PPN), dan 4D (Dividen) terhitung dan terdistribusi presisi."
+                  },
+                  {
+                        "code": "AR-006",
+                        "tag": "Bank Expense",
+                        "type": "normal",
+                        "desc": "<strong>[Tabel Beban Bank]</strong> 1. Buka Annual Report -> Periksa tabel pengeluaran per rekening bank. 2. Verifikasi: Total pengeluaran per bank cocok dengan mutasi riil di Bank Cash."
+                  },
+                  {
+                        "code": "AR-007",
+                        "tag": "Sheet 3",
+                        "type": "normal",
+                        "desc": "<strong>[Sheet 3 (Neraca & Saldo Akhir)]</strong> 1. Buka Annual Report -> Pilih Sheet 3. 2. Verifikasi: Tampil posisi kas akhir tahun dan perbandingan aset lancar/liabilitas."
+                  },
+                  {
+                        "code": "AR-008",
+                        "tag": "Popup Struk",
+                        "type": "ui",
+                        "desc": "<strong>[Popup Bukti Lampiran Sel]</strong> 1. Klik ikon klip dokumen pada salah satu sel angka transaksi di Annual Report. 2. Verifikasi: Pop-up gambar bukti pendukung terbuka."
+                  }
+            ]
+      },
+      {
+            "id": "modul-15",
+            "num": "15",
+            "title": "Settings, Profile & Balance Sheet Configuration",
+            "desc": "Pengujian profil pengguna, avatar cropper, switch tema, dan konfigurasi neraca.",
+            "cases": [
+                  {
+                        "code": "SET-001",
+                        "tag": "Image Cropper",
+                        "type": "ui",
+                        "desc": "<strong>[Ubah Profil & Avatar Cropper]</strong> 1. Buka Sidebar -> Klik menu <strong>Pengaturan</strong>. 2. Klik pensil edit avatar -> Upload foto -> Potong foto di dialog cropper -> Simpan. 3. Verifikasi: Avatar profil ter-update."
+                  },
+                  {
+                        "code": "SET-002",
+                        "tag": "Theme Switch",
+                        "type": "ui",
+                        "desc": "<strong>[Toggle Tema Gelap/Terang]</strong> 1. Buka menu Pengaturan. 2. Klik tombol tema (Light / Dark / System). 3. Verifikasi: Seluruh warna UI aplikasi seketika berubah instan tanpa perlu reload."
+                  },
+                  {
+                        "code": "SET-003",
+                        "tag": "Global Sync",
+                        "type": "integration",
+                        "desc": "<strong>[Ganti Default Tahun Laporan]</strong> 1. Buka menu Pengaturan. 2. Ubah dropdown Default Tahun dari 2026 ke 2025 -> Klik 'Simpan Default Tahun'. 3. Buka Kasbon/Settlement -> Verifikasi: Data otomatis menampilkan tahun 2025."
+                  },
+                  {
+                        "code": "SET-004",
+                        "tag": "OAuth SSO",
+                        "type": "normal",
+                        "desc": "<strong>[Google Account Link/Unlink]</strong> 1. Buka menu Pengaturan -> Klik 'Hubungkan Google' -> Selesaikan login Google. 2. Verifikasi: Tombol berubah hijau 'Google Terhubung'. Klik lagi untuk putus tautan."
+                  },
+                  {
+                        "code": "SET-005",
+                        "tag": "Balance Sheet",
+                        "type": "normal",
+                        "desc": "<strong>[Balance Sheet Settings Screen]</strong> 1. Buka Sidebar -> Menu Pengaturan -> Buka menu pengaturan neraca. 2. Konfigurasi pos akun aktiva lancar dan pasiva -> Simpan. 3. Verifikasi: Format neraca di laporan ter-update."
+                  }
+            ]
+      },
+      {
+            "id": "modul-16",
+            "num": "16",
+            "title": "Manager Panel, Data Cleanup & Deadline Notifikasi",
+            "desc": "Pengujian fitur eksklusif Manager: batas waktu notifikasi lonceng dan pembersihan darurat.",
+            "cases": [
+                  {
+                        "code": "MGR-001",
+                        "tag": "Role Guard",
+                        "type": "security",
+                        "desc": "<strong>[Manager Panel Toggle]</strong> 1. Login sebagai Staf -> Verifikasi tombol Manager Panel disembunyikan. 2. Login sebagai Manager -> Verifikasi tombol Manager Panel muncul di AppBar."
+                  },
+                  {
+                        "code": "MGR-002",
+                        "tag": "Deadline Setting",
+                        "type": "normal",
+                        "desc": "<strong>[Deadline Manager Screen]</strong> 1. Buka Sidebar -> Menu Pengaturan -> Klik <strong>Kelola Deadline Notifikasi</strong>. 2. Atur batas waktu submit settlement (misal tanggal 25 setiap bulan) -> Klik Simpan. 3. Verifikasi: Pengaturan deadline tersimpan."
+                  },
+                  {
+                        "code": "MGR-003",
+                        "tag": "Notification",
+                        "type": "ui",
+                        "desc": "<strong>[Lonceng Notifikasi]</strong> 1. Saat lewat batas tanggal deadline, amati ikon lonceng di AppBar atas. 2. Verifikasi: Muncul badge merah penanda angka dan daftar notifikasi teguran."
+                  },
+                  {
+                        "code": "MGR-004",
+                        "tag": "Purge Guard",
+                        "type": "security",
+                        "desc": "<strong>[Selective Data Cleanup Screen]</strong> 1. Buka Sidebar -> Menu Pengaturan -> Buka menu Pembersihan Data Selektif -> Pilih Tahun: 2023, Tipe: 'Settlement Draft'. 2. Klik Bersihkan Data -> Ketik 'DELETE'. 3. Verifikasi: Hanya data spesifik terhapus."
+                  }
+            ]
+      },
+      {
+            "id": "modul-17",
+            "num": "17",
+            "title": "Database Backup, Restore & Global Restart",
+            "desc": "Pengujian export/import basis data, validasi format, dan restart global.",
+            "cases": [
+                  {
+                        "code": "DB-001",
+                        "tag": "Backup DB",
+                        "type": "normal",
+                        "desc": "<strong>[Export Database]</strong> 1. Buka Sidebar -> Menu Pengaturan (sebagai Manager). 2. Klik tombol <strong>Export Database</strong>. 3. Verifikasi: File backup .sql / .db berhasil di-generate dan lokasi path file ditampilkan."
+                  },
+                  {
+                        "code": "DB-002",
+                        "tag": "Format Validation",
+                        "type": "security",
+                        "desc": "<strong>[Import: Validasi Ekstensi]</strong> 1. Di menu Pengaturan, klik tombol <strong>Import Database</strong>. 2. Coba pilih file berekstensi .pdf atau .txt. 3. Verifikasi: Sistem menolak keras file dengan pesan format tidak valid."
+                  },
+                  {
+                        "code": "DB-003",
+                        "tag": "Safety Warning",
+                        "type": "security",
+                        "desc": "<strong>[Import: Preview & Peringatan]</strong> 1. Di menu Pengaturan, klik <strong>Import Database</strong> -> Pilih file backup valid .db. 2. Verifikasi: Muncul dialog preview tabel dan kotak peringatan merah bahwa database lama akan ditimpa."
+                  },
+                  {
+                        "code": "DB-004",
+                        "tag": "Global Restart",
+                        "type": "integration",
+                        "desc": "<strong>[Import: Eksekusi & Global Restart]</strong> 1. Setujui proses import database valid. 2. Verifikasi: Sistem merestore DB dan otomatis me-restart UI aplikasi ke titik awal dengan data baru yang bersih."
+                  }
+            ]
+      },
+      {
+            "id": "modul-18",
+            "num": "18",
+            "title": "Authentication, SSO, OTP & Company Gateway",
+            "desc": "Pengujian login, register, Google SSO, lupa password OTP, dan gateway perusahaan.",
+            "cases": [
+                  {
+                        "code": "AUT-001",
+                        "tag": "Normal",
+                        "type": "normal",
+                        "desc": "<strong>[Login Normal]</strong> 1. Buka layar Login -> Masukkan username & password yang benar. 2. Centang 'Remember Me' -> Klik <strong>Login</strong>. 3. Verifikasi: Berhasil masuk ke aplikasi."
+                  },
+                  {
+                        "code": "AUT-002",
+                        "tag": "Validation",
+                        "type": "edge",
+                        "desc": "<strong>[Validasi Login Kosong]</strong> 1. Di layar Login, kosongkan username dan password. 2. Klik tombol <strong>Login</strong>. 3. Verifikasi: Muncul pesan validasi merah 'Field wajib diisi'."
+                  },
+                  {
+                        "code": "AUT-003",
+                        "tag": "Validation",
+                        "type": "edge",
+                        "desc": "<strong>[Validasi Password Pendek]</strong> 1. Di layar Login, masukkan password kurang dari 6 karakter (contoh: 123). 2. Klik Login. 3. Verifikasi: Muncul peringatan 'Password minimal 6 karakter'."
+                  },
+                  {
+                        "code": "AUT-004",
+                        "tag": "Network Fallback",
+                        "type": "ui",
+                        "desc": "<strong>[Error Jaringan & Tombol Cek IP]</strong> 1. Putuskan koneksi backend -> Coba klik Login. 2. Verifikasi: Muncul pesan error jaringan disertai tombol bantuan <strong>CEK IP</strong> untuk ubah Server URL."
+                  },
+                  {
+                        "code": "AUT-005",
+                        "tag": "OTP Flow",
+                        "type": "normal",
+                        "desc": "<strong>[Lupa Password Flow]</strong> 1. Di layar Login, klik <strong>Lupa Password</strong> -> Masukkan email -> Minta OTP. 2. Masukkan kode OTP valid -> Buat password baru. 3. Verifikasi: Password berhasil diubah dan bisa login."
+                  },
+                  {
+                        "code": "AUT-006",
+                        "tag": "OAuth SSO",
+                        "type": "normal",
+                        "desc": "<strong>[Google SSO Email Baru]</strong> 1. Klik Login Google dengan akun Gmail yang belum terdaftar. 2. Verifikasi: Redirect ke form Register dengan Email & Nama terkunci otomatis (read-only)."
+                  },
+                  {
+                        "code": "AUT-007",
+                        "tag": "Transition Guard",
+                        "type": "ui",
+                        "desc": "<strong>[Register Normal]</strong> 1. Di form Register, isi form pendaftaran lengkap -> Klik Daftar. 2. Verifikasi: Muncul dialog registrasi sukses dengan delay transisi mulus mencegah layar berkedip putih."
+                  },
+                  {
+                        "code": "AUT-008",
+                        "tag": "Auto Bypass",
+                        "type": "normal",
+                        "desc": "<strong>[Single Company Auto-Bypass]</strong> 1. Login menggunakan akun user yang hanya terdaftar di 1 perusahaan. 2. Verifikasi: Layar pemilihan perusahaan otomatis di-bypass langsung ke Dashboard."
+                  },
+                  {
+                        "code": "AUT-009",
+                        "tag": "Gateway Select",
+                        "type": "normal",
+                        "desc": "<strong>[Multi Company Gateway]</strong> 1. Login menggunakan user yang terdaftar di 2 perusahaan (misal: EWI & EXPANS). 2. Verifikasi: Muncul halaman gateway 'Pilih Perusahaan' -> Klik kartu -> Masuk ke dashboard."
+                  }
+            ]
+      },
+      {
+            "id": "modul-19",
+            "num": "19",
+            "title": "Matriks Efek Domino & Sinkronisasi Global",
+            "desc": "Pengujian apakah tindakan pada SATU fitur secara otomatis mengalir dan memperbarui fitur-fitur lainnya secara tepat.",
+            "cases": [
+                  {
+                        "code": "INT-001",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Pencairan Kasbon -> Bank Cash]</strong> 1. Finance approve Pencairan Kasbon Rp 5.000.000 dari Bank BCA. 2. Buka menu BANK -> tab Bank Cash. 3. Verifikasi: Saldo fisik Bank BCA terpotong Rp 5.000.000."
+                  },
+                  {
+                        "code": "INT-002",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Pencairan Kasbon -> Bank Advance]</strong> 1. Setelah pencairan kasbon disetujui, buka tab Bank Advance. 2. Verifikasi: Saldo virtual staf pemohon otomatis bertambah Rp 5.000.000."
+                  },
+                  {
+                        "code": "INT-003",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Pencairan Kasbon -> Logbook BCA]</strong> 1. Buka Logbook Bank BCA. 2. Verifikasi: Tercatat mutasi Pengeluaran Kasbon sebesar Rp 5.000.000."
+                  },
+                  {
+                        "code": "INT-004",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Pencairan Kasbon -> Profil Staf]</strong> 1. Buka profil staf pemohon kasbon. 2. Verifikasi: Panel Saldo Kasbon Berjalan ter-update menjadi Rp 5.000.000."
+                  },
+                  {
+                        "code": "INT-005",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Pencairan Kasbon -> Settlement Guard]</strong> 1. Staf mencoba klik + Buat Settlement baru. 2. Verifikasi: Dialog 'Perhatian: Outstanding Kasbon' langsung aktif mencegat."
+                  },
+                  {
+                        "code": "INT-006",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Submit Settlement -> Proyeksi Kasbon]</strong> 1. Staf submit Settlement nota total Rp 3.000.000. 2. Verifikasi: Warning box proyeksi dompet menampilkan sisa kasbon staf berkurang menjadi Rp 2.000.000."
+                  },
+                  {
+                        "code": "INT-007",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Final Settlement -> Hutang Berkurang]</strong> 1. Manager klik 'Setujui Final Settlement'. 2. Verifikasi: Hutang kasbon staf di database resmi berkurang Rp 3.000.000."
+                  },
+                  {
+                        "code": "INT-008",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Final Settlement -> Report Summary]</strong> 1. Buka menu Laporan -> Report Summary. 2. Verifikasi: Angka pengeluaran pada bulan bersangkutan otomatis bertambah Rp 3.000.000."
+                  },
+                  {
+                        "code": "INT-009",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Final Settlement -> Annual Report]</strong> 1. Buka menu Laporan -> Annual Report. 2. Verifikasi: Seluruh Sheet (Sheet 1, 2, 3) merefleksikan penambahan pengeluaran Rp 3.000.000."
+                  },
+                  {
+                        "code": "INT-010",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Standalone Return -> Kasbon Lunas]</strong> 1. Staf mengembalikan sisa kasbon Rp 2.000.000 via Standalone Return ke Bank Mandiri. 2. Verifikasi: Sisa hutang kasbon staf menjadi Rp 0 (Lunas)."
+                  },
+                  {
+                        "code": "INT-011",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Standalone Return -> Bank Advance Staf]</strong> 1. Buka menu BANK -> tab Bank Advance. 2. Verifikasi: Saldo virtual Bank Advance staf bertambah pulih kembali Rp 2.000.000."
+                  },
+                  {
+                        "code": "INT-012",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Standalone Return -> Logbook Advance]</strong> 1. Buka Logbook Bank Advance staf. 2. Verifikasi: Tercatat mutasi Pemasukan Pengembalian Dana (Plafon Virtual) Rp 2.000.000 dan pengurangan hutang."
+                  },
+                  {
+                        "code": "INT-013",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Kasbon Lunas -> Bebas Peringatan]</strong> 1. Setelah kasbon lunas Rp 0, staf klik + Buat Settlement. 2. Verifikasi: Dialog Outstanding Kasbon TIDAK MUNCUL lagi (langsung masuk form normal)."
+                  },
+                  {
+                        "code": "INT-014",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Revenue Baru -> Bank & Sheet 1]</strong> 1. Tambah Revenue pemasukan Rp 50.000.000. 2. Verifikasi: Saldo Bank bertambah Rp 50.000.000 dan Laporan Tahunan Sheet 1 bertambah Rp 50.000.000."
+                  },
+                  {
+                        "code": "INT-015",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Bagi Dividen -> Bank & Sheet 2]</strong> 1. Lakukan bagi dividen Rp 10.000.000. 2. Verifikasi: Saldo Bank terpotong Rp 10.000.000 dan Laporan Sheet 2 mencatat potongan dividen."
+                  },
+                  {
+                        "code": "INT-016",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Urutan Kategori -> Excel Export]</strong> 1. Ubah urutan di Kategori Tabular -> Simpan. 2. Download Excel Tahunan. 3. Verifikasi: Kolom-kolom di Excel tersusun persis sesuai urutan baru."
+                  },
+                  {
+                        "code": "INT-017",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Ganti Tahun di Settings -> Global Sync]</strong> 1. Ganti default tahun ke 2024 di Pengaturan. 2. Verifikasi: Seluruh modul Kasbon, Settlement, Bank, Revenue, dan Report serentak memuat tahun 2024."
+                  },
+                  {
+                        "code": "INT-018",
+                        "tag": "Ripple Effect",
+                        "type": "integration",
+                        "desc": "<strong>[Restore DB Backup -> Global Reset]</strong> 1. Lakukan restore database baru. 2. Verifikasi: Seluruh cache lokal terhapus, aplikasi ter-reset dari halaman login, dan menampilkan isi DB baru."
+                  }
+            ]
+      }
+];
+
+    // LocalStorage Keys
+    const STORAGE_KEY = 'ewiapps_qa_matrix_state_v1';
+
+    // State
+    let checkedState = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    // Elements
+    const modulesContainer = document.getElementById('modulesContainer');
+    const sidebarItems = document.getElementById('sidebarItems');
+    const totalProgressText = document.getElementById('totalProgressText');
+    const totalProgressBar = document.getElementById('totalProgressBar');
+    const searchInput = document.getElementById('searchInput');
+    const toast = document.getElementById('toastNotification');
+    const toastMessage = document.getElementById('toastMessage');
+
+    // Show Toast Helper
+    function showToast(msg) {
+      toastMessage.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // Save State
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(checkedState));
+      updateProgress();
+    }
+
+    // Calculate Progress
+    function updateProgress() {
+      let total = 0;
+      let completed = 0;
+
+      testMatrixData.forEach(mod => {
+        let modTotal = mod.cases.length;
+        let modCompleted = 0;
+        mod.cases.forEach(c => {
+          total++;
+          if (checkedState[c.code]) {
+            completed++;
+            modCompleted++;
+          }
+        });
+
+        // Update sidebar count
+        const sideCount = document.getElementById(`nav-count-${mod.id}`);
+        const sideItem = document.getElementById(`nav-item-${mod.id}`);
+        if (sideCount && sideItem) {
+          sideCount.textContent = `${modCompleted}/${modTotal}`;
+          if (modCompleted === modTotal && modTotal > 0) {
+            sideItem.classList.add('complete');
+          } else {
+            sideItem.classList.remove('complete');
+          }
+        }
+
+        // Update module header chip
+        const modChip = document.getElementById(`mod-progress-${mod.id}`);
+        if (modChip) {
+          const pct = Math.round((modCompleted / modTotal) * 100);
+          modChip.textContent = `${modCompleted} / ${modTotal} (${pct}%)`;
+          if (modCompleted === modTotal) {
+            modChip.style.background = 'rgba(16, 185, 129, 0.15)';
+            modChip.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+            modChip.style.color = '#34d399';
+          } else {
+            modChip.style.background = 'var(--bg-secondary)';
+            modChip.style.borderColor = 'var(--border-color)';
+            modChip.style.color = 'var(--text-muted)';
+          }
+        }
+      });
+
+      const totalPct = total > 0 ? Math.round((completed / total) * 100) : 0;
+      totalProgressText.textContent = `${completed} / ${total} (${totalPct}%)`;
+      totalProgressBar.style.width = `${totalPct}%`;
+    }
+
+    // Render Sidebar
+    function renderSidebar() {
+      sidebarItems.innerHTML = '';
+      testMatrixData.forEach((mod, idx) => {
+        const item = document.createElement('a');
+        item.className = 'nav-item' + (idx === 0 ? ' active' : '');
+        item.id = `nav-item-${mod.id}`;
+        item.href = `#${mod.id}`;
+        item.innerHTML = `
+          <span>${mod.num}. ${mod.title}</span>
+          <span class="nav-item-count" id="nav-count-${mod.id}">0/${mod.cases.length}</span>
+        `;
+        item.addEventListener('click', (e) => {
+          document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+          item.classList.add('active');
+        });
+        sidebarItems.appendChild(item);
+      });
+    }
+
+    // Render Modules & Test Cases
+    function renderMatrix() {
+      modulesContainer.innerHTML = '';
+
+      let anyVisible = false;
+
+      testMatrixData.forEach(mod => {
+        // Filter cases
+        const filteredCases = mod.cases.filter(c => {
+          const isChecked = !!checkedState[c.code];
+          
+          // Search filter
+          if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            const matchCode = c.code.toLowerCase().includes(q);
+            const matchTag = c.tag.toLowerCase().includes(q);
+            const matchDesc = c.desc.toLowerCase().includes(q);
+            const matchMod = mod.title.toLowerCase().includes(q);
+            if (!matchCode && !matchTag && !matchDesc && !matchMod) return false;
+          }
+
+          // Chip filter
+          if (currentFilter === 'untested' && isChecked) return false;
+          if (currentFilter === 'completed' && !isChecked) return false;
+          if (currentFilter === 'edge' && c.type !== 'edge') return false;
+          if (currentFilter === 'integration' && c.type !== 'integration') return false;
+
+          return true;
+        });
+
+        if (filteredCases.length === 0) return;
+        anyVisible = true;
+
+        const section = document.createElement('div');
+        section.className = 'module-section';
+        section.id = mod.id;
+
+        // Header
+        const header = document.createElement('div');
+        header.className = 'module-header';
+        header.innerHTML = `
+          <div class="module-header-left">
+            <div class="module-badge-num">${mod.num}</div>
+            <div class="module-title-wrap">
+              <h2>${mod.title}</h2>
+              <p>${mod.desc}</p>
+            </div>
+          </div>
+          <div class="module-header-right">
+            <span class="module-progress-chip" id="mod-progress-${mod.id}">0 / ${mod.cases.length}</span>
+            <button class="btn-batch-check" onclick="toggleModuleAll('${mod.id}')">Toggle All</button>
+          </div>
+        `;
+        section.appendChild(header);
+
+        // List
+        const list = document.createElement('div');
+        list.className = 'test-cases-list';
+
+        filteredCases.forEach(c => {
+          const isChecked = !!checkedState[c.code];
+          const item = document.createElement('div');
+          item.className = `test-item ${isChecked ? 'completed' : ''}`;
+          item.id = `item-${c.code}`;
+
+          let tagClass = 'tag-normal';
+          if (c.type === 'edge') tagClass = 'tag-edge';
+          if (c.type === 'security') tagClass = 'tag-security';
+          if (c.type === 'integration') tagClass = 'tag-integration';
+          if (c.type === 'ui') tagClass = 'tag-ui';
+
+          item.innerHTML = `
+            <div class="checkbox-container" onclick="toggleTest('${c.code}')">
+              <div class="custom-checkbox ${isChecked ? 'checked' : ''}" id="check-${c.code}">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+            </div>
+            <div class="test-code">${c.code}</div>
+            <div class="test-tag ${tagClass}">${c.tag}</div>
+            <div class="test-desc">${c.desc}</div>
+          `;
+          list.appendChild(item);
+        });
+
+        section.appendChild(list);
+        modulesContainer.appendChild(section);
+      });
+
+      if (!anyVisible) {
+        modulesContainer.innerHTML = `
+          <div class="empty-state">
+            <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 1rem; opacity: 0.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <h3>Tidak ada test case yang cocok</h3>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem">Coba ubah kata kunci pencarian atau ganti filter chip di atas.</p>
+          </div>
+        `;
+      }
+
+      updateProgress();
+    }
+
+    // Toggle Single Test Case
+    window.toggleTest = function(code) {
+      checkedState[code] = !checkedState[code];
+      const checkEl = document.getElementById(`check-${code}`);
+      const itemEl = document.getElementById(`item-${code}`);
+      
+      if (checkedState[code]) {
+        if (checkEl) checkEl.classList.add('checked');
+        if (itemEl) itemEl.classList.add('completed');
+      } else {
+        if (checkEl) checkEl.classList.remove('checked');
+        if (itemEl) itemEl.classList.remove('completed');
+      }
+
+      saveState();
+    };
+
+    // Toggle All Cases in a Module
+    window.toggleModuleAll = function(modId) {
+      const mod = testMatrixData.find(m => m.id === modId);
+      if (!mod) return;
+
+      const allChecked = mod.cases.every(c => !!checkedState[c.code]);
+      mod.cases.forEach(c => {
+        checkedState[c.code] = !allChecked;
+      });
+
+      saveState();
+      renderMatrix();
+      showToast(allChecked ? `Semua tes di Modul ${mod.num} di-uncheck` : `Semua tes di Modul ${mod.num} selesai (✓)!`);
+    };
+
+    // Reset All State
+    document.getElementById('btnResetAll').addEventListener('click', () => {
+      if (confirm('Apakah Anda yakin ingin me-reset seluruh checklist pengujian kembali ke 0?')) {
+        checkedState = {};
+        saveState();
+        renderMatrix();
+        showToast('Seluruh progress pengujian berhasil di-reset!');
+      }
+    });
+
+    // Export Markdown Status
+    document.getElementById('btnExportMarkdown').addEventListener('click', () => {
+      let md = `# LAPORAN HASIL PENGUJIAN EWIAPPS (QA REPORT)\n`;
+      md += `> Tanggal Ekspor: ${new Date().toLocaleString('id-ID')}\n\n`;
+
+      let total = 0;
+      let completed = 0;
+
+      testMatrixData.forEach(mod => {
+        let modDone = mod.cases.filter(c => !!checkedState[c.code]).length;
+        md += `## ${mod.num}. ${mod.title} (${modDone}/${mod.cases.length})\n`;
+        mod.cases.forEach(c => {
+          total++;
+          const check = checkedState[c.code] ? '[x]' : '[ ]';
+          if (checkedState[c.code]) completed++;
+          const cleanDesc = c.desc.replace(/<[^>]*>?/gm, '');
+          md += `- ${check} **${c.code}** | [${c.tag}] ${cleanDesc}\n`;
+        });
+        md += `\n`;
+      });
+
+      const pct = Math.round((completed / total) * 100);
+      md = `# LAPORAN HASIL PENGUJIAN EWIAPPS (QA REPORT)\n> Total Selesai: ${completed} dari ${total} test case (${pct}%)\n` + md.substring(md.indexOf('\n\n'));
+
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ewiapps_qa_report_${new Date().toISOString().slice(0,10)}.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Laporan Markdown berhasil di-export & diunduh!');
+    });
+
+    // Search Input Event
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderMatrix();
+    });
+
+    // Filter Chips Event
+    document.querySelectorAll('.filter-chips .chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentFilter = chip.getAttribute('data-filter');
+        renderMatrix();
+      });
+    });
+
+    // Initial Execution
+    renderSidebar();
+    renderMatrix();
+  </script>
+</body>
+</html>

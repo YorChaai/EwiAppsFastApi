@@ -1,0 +1,143 @@
+# Laporan Perubahan Dokumentasi
+**Tanggal Generate:** 2026-09-05 17:00:12
+
+Laporan ini mendeteksi perubahan struktur kode (file ditambahkan, dihapus, atau dimodifikasi) yang berdampak pada dokumentasi.
+
+---
+
+## Perubahan Backend
+### 🆕 File Baru / Dokumentasi Ditambahkan
+- `app.py`
+- `clean_all.py`
+- `clean_duplicate_parsing.py`
+- `cleanup_auth.py`
+- `cleanup_auth_regex.py`
+- `config.py`
+- `extract_funcs.py`
+- `fix_imports.py`
+- `fix_routes.py`
+- `fix_services.py`
+- `models\banking.py`
+- `models\base.py`
+- `models\core.py`
+- `models\system.py`
+- `models\transaction.py`
+- `move_utils_to_services.py`
+- `routes\advances\advances.py`
+- `routes\advances\advances_approval.py`
+- `routes\advances\advances_crud.py`
+- `routes\advances\advances_disbursement.py`
+- `routes\advances\advances_items.py`
+- `routes\advances\advances_other.py`
+- `routes\core\auth.py`
+- `routes\core\cleanup.py`
+- `routes\core\dashboard.py`
+- `routes\core\notifications.py`
+- `routes\master_data\bank_management.py`
+- `routes\master_data\bank_status.py`
+- `routes\master_data\categories.py`
+- `routes\master_data\companies.py`
+- `routes\master_data\taxes.py`
+- `routes\reports\annual.py`
+- `routes\reports\annual_constants.py`
+- `routes\reports\annual_data.py`
+- `routes\reports\annual_excel.py`
+- `routes\reports\annual_helpers.py`
+- `routes\reports\annual_tables.py`
+- `routes\reports\summary.py`
+- `routes\settings\db_storage.py`
+- `routes\settings\deadline.py`
+- `routes\settings\profile.py`
+- `routes\settlements\settlements.py`
+- `routes\settlements\settlements_approval.py`
+- `routes\settlements\settlements_crud.py`
+- `routes\settlements\settlements_disbursement.py`
+- `routes\settlements\settlements_expenses.py`
+- `routes\settlements\settlements_other.py`
+- `routes\transactions\assets.py`
+- `routes\transactions\dividends.py`
+- `routes\transactions\expenses.py`
+- `routes\transactions\revenues.py`
+- `services\advances\advance_approval_service.py`
+- `services\advances\advance_items_service.py`
+- `services\approvals\advance_helpers.py`
+- `services\approvals\settlement_helpers.py`
+- `services\balance\balance_service.py`
+- `services\balance\user_balance_service.py`
+- `services\core\auth_service.py`
+- `services\core\email_service.py`
+- `services\core\notification_events.py`
+- `services\core\settings_service.py`
+- `services\core\storage_service.py`
+- `services\dto\transaction_dto.py`
+- `services\master_data\tax_service.py`
+- `services\reports\annual_service\annual_constants.py`
+- `services\reports\annual_service\annual_data.py`
+- `services\reports\annual_service\annual_excel.py`
+- `services\reports\annual_service\annual_helpers.py`
+- `services\reports\annual_service\annual_tables.py`
+- `services\reports\annual_service\caching.py`
+- `services\reports\annual_service\excel_generator.py`
+- `services\reports\data_fetcher\db_fetchers.py`
+- `services\reports\data_fetcher\depreciation.py`
+- `services\reports\data_fetcher\payload_builder.py`
+- `services\reports\summary_service\data_helpers.py`
+- `services\reports\summary_service\excel_generator.py`
+- `services\reports\summary_service\pdf_generator.py`
+- `services\reports\table_builder\expense_renderer.py`
+- `services\reports\table_builder\expense_renderer_utils.py`
+- `services\reports\table_builder\pdf_builder.py`
+- `services\reports\table_builder\revenue_helpers.py`
+- `services\settlements\settlement_approval_service.py`
+- `services\transactions\dividend_service.py`
+- `services\transactions\revenue_service.py`
+- `update_parsing_imports.py`
+- `utils\auth_helper.py`
+- `utils\constants.py`
+- `utils\deadline_worker.py`
+- `utils\parsing_helper.py`
+- `utils\report_helpers.py`
+- `utils\storage.py`
+- `utils\transaction_templates.py`
+- `utils\workflow_helper.py`
+
+### ❌ File Dihapus / Dokumentasi Dihapus
+- `advances\advances.py`
+- `advances\advances_approval.py`
+- `advances\advances_crud.py`
+- `advances\advances_disbursement.py`
+- `advances\advances_items.py`
+- `advances\advances_other.py`
+- `core\auth.py`
+- `core\cleanup.py`
+- `core\dashboard.py`
+- `core\notifications.py`
+- `master_data\bank_management.py`
+- `master_data\bank_status.py`
+- `master_data\categories.py`
+- `master_data\companies.py`
+- `master_data\taxes.py`
+- `reports\annual.py`
+- `reports\annual_constants.py`
+- `reports\annual_data.py`
+- `reports\annual_excel.py`
+- `reports\annual_helpers.py`
+- `reports\annual_tables.py`
+- `reports\summary.py`
+- `settings\db_storage.py`
+- `settings\deadline.py`
+- `settings\profile.py`
+- `settlements\settlements.py`
+- `settlements\settlements_approval.py`
+- `settlements\settlements_crud.py`
+- `settlements\settlements_disbursement.py`
+- `settlements\settlements_expenses.py`
+- `settlements\settlements_other.py`
+- `transactions\assets.py`
+- `transactions\dividends.py`
+- `transactions\expenses.py`
+- `transactions\revenues.py`
+
+---
+## Perubahan Frontend
+> ✅ **Tidak ada perubahan pada dokumentasi ini.**

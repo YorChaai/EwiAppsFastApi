@@ -1,0 +1,822 @@
+1: part of 'main_layout.dart';
+2: 
+3: class _SettlementListView extends StatefulWidget {
+4:   const _SettlementListView({super.key});
+5:   @override
+6:   State<_SettlementListView> createState() => _SettlementListViewState();
+7: }
+8: 
+9: class _SettlementListViewState extends State<_SettlementListView> {
+10:   static const Duration _searchDebounceDuration = Duration(milliseconds: 350);
+11:   String? _statusFilter;
+12:   DateTime? _startDate;
+13:   DateTime? _endDate;
+14:   String _searchQuery = '';
+15:   double? _annualSettlementTotal;
+16:   final ScrollController _listScrollController = ScrollController();
+17:   final TextEditingController _searchCtrl = TextEditingController();
+18:   Timer? _searchDebounce;
+19:   Timer? _summaryDebounce;
+20:   bool _showScrollToTop = false;
+21:   bool _selectionMode = false;
+22:   final Set<String> _selectedItemKeys = {};
+23:   String _selectedType = 'single';
+24:   String _filterMode = 'report'; // Default placeholder, will sync in initState
+25:   SettlementProvider? _settlementProvider; // ✅ Store reference
+26:   StreamSubscription<void>? _refreshSub;
+27: 
+28:   Color _cardColor(BuildContext context) =>
+29:       context.isDark ? AppTheme.card : AppTheme.lightCard;
+30:   Color _titleColorLocal(BuildContext context) =>
+31:       context.isDark ? AppTheme.cream : AppTheme.lightTextPrimary;
+32:   Color _bodyColorLocal(BuildContext context) =>
+33:       context.isDark ? AppTheme.textSecondary : AppTheme.lightTextSecondary;
+34:   Color _dividerColor(BuildContext context) =>
+35:       context.isDark ? AppTheme.divider : AppTheme.lightDivider;
+36:   Color _primaryTextLocal(BuildContext context) =>
+37:       context.isDark ? AppTheme.textPrimary : AppTheme.lightTextPrimary;
+38: 
+39:   void _handleListScroll() {
+40:     if (!_listScrollController.hasClients) return;
+41:     final shouldShow = _listScrollController.offset > 320;
+42:     if (shouldShow != _showScrollToTop && mounted) {
+43:       setState(() => _showScrollToTop = shouldShow);
+44:     }
+45:   }
+46: 
+47:   Future<void> scrollToTop() async {
+48:     if (!_listScrollController.hasClients) return;
+49:     await _listScrollController.animateTo(
+50:       0,
+51:       duration: const Duration(milliseconds: 400),
+52:       curve: Curves.easeOutCubic,
+53:     );
+54:   }
+55: 
+56:   void _scheduleSettlementReload() {
+57:     _searchDebounce?.cancel();
+58:     _searchDebounce = Timer(_searchDebounceDuration, _reloadSettlements);
+59:   }
+60: 
+61:   /// Reset semua filter dan pencarian
+62:   void resetFilters() {
+63:     if (!mounted) return;
+64:     setState(() {
+65:       _statusFilter = null;
+66:       _searchQuery = '';
+67:       _searchCtrl.clear();
+68:       _startDate = null;
+69:       _endDate = null;
+70:       _selectedType = 'single';
+71:     });
+72:     context.read<SettlementProvider>().clearFilters();
+73:     scrollToTop();
+74:   }
+75: 
+76:   void _toggleItemSelection(int id, bool isSettlement, bool selected) {
+77:     final key = isSettlement ? 's_$id' : 'a_$id';
+78:     setState(() {
+79:       if (selected) {
+80:         _selectedItemKeys.add(key);
+81:         _selectionMode = true;
+82:       } else {
+83:         _selectedItemKeys.remove(key);
+84:       }
+85:       if (_selectedItemKeys.isEmpty) _selectionMode = false;
+86:     });
+87:   }
+88: 
+89:   Future<void> _bulkDeleteItems() async {
+90:     if (_selectedItemKeys.isEmpty) return;
+91: 
+92:     final confirm = await showDialog<bool>(
+93:       context: context,
+94:       builder: (ctx) => AlertDialog(
+95:         backgroundColor: _cardColor(context),
+96:         title: const Text('Hapus Masal'),
+97:         content: Text(
+98:           'Apakah Anda yakin ingin menghapus ${_selectedItemKeys.length} item terpilih?',
+99:         ),
+100:         actions: [
+101:           TextButton(
+102:             onPressed: () => Navigator.pop(ctx, false),
+103:             child: Text(
+104:               'Batal',
+105:               style: TextStyle(color: _bodyColorLocal(context)),
+106:             ),
+107:           ),
+108:           ElevatedButton(
+109:             onPressed: () => Navigator.pop(ctx, true),
+110:             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.danger),
+111:             child: const Text('Hapus', style: TextStyle(color: Colors.white)),
+112:           ),
+113:         ],
+114:       ),
+115:     );
+116: 
+117:     if (confirm != true || !mounted) return;
+118: 
+119:     // Show loading
+120:     showDialog(
+121:       context: context,
+122:       barrierDismissible: false,
+123:       builder: (ctx) => const Center(child: CircularProgressIndicator()),
+124:     );
+125: 
+126:     int successCount = 0;
+127:     List<String> failures = [];
+128: 
+129:     try {
+130:       final sProv = context.read<SettlementProvider>();
+131:       final aProv = context.read<AdvanceProvider>();
+132:       final keys = _selectedItemKeys.toList();
+133: 
+134:       for (final key in keys) {
+135:         final parts = key.split('_');
+136:         if (parts.length != 2) continue;
+137:         final type = parts[0];
+138:         final id = int.tryParse(parts[1]);
+139:         if (id == null) continue;
+140: 
+141:         bool success = false;
+142:         if (type == 's') {
+143:           success = await sProv.deleteSettlement(id, reload: false);
+144:         } else {
+145:           success = await aProv.deleteAdvance(id, reload: false);
+146:         }
+147: 
+148:         if (success) {
+149:           successCount++;
+150:         } else {
+151:           failures.add(id.toString());
+152:         }
+153:       }
+154: 
+155:       await sProv.loadSettlements();
+156:       await aProv.loadAdvances();
+157: 
+158:       if (mounted) {
+159:         Navigator.pop(context); // hide loading
+160:         setState(() {
+161:           _selectedItemKeys.clear();
+162:           _selectionMode = false;
+163:         });
+164: 
+165:         if (failures.isEmpty) {
+166:           AppSnackbar.show('Berhasil menghapus $successCount item');
+167:         } else {
+168:           AppSnackbar.show(
+169:             'Berhasil: $successCount, Gagal: ${failures.length}. (Staff hanya bisa hapus Draft)',
+170:             isError: true,
+171:           );
+172:         }
+173:       }
+174:     } catch (e) {
+175:       if (mounted) {
+176:         Navigator.pop(context); // hide loading
+177:         AppSnackbar.show(
+178:           'Gagal menghapus beberapa item: $e',
+179:           isError: true,
+180:         );
+181:       }
+182:     }
+183:   }
+184: 
+185:   @override
+186:   void initState() {
+187:     super.initState();
+188:     _listScrollController.addListener(_handleListScroll);
+189:     _settlementProvider = context.read<SettlementProvider>();
+190:     _statusFilter = _settlementProvider!.statusFilter;
+191:     _filterMode = _settlementProvider!.filterMode; // ✅ Sync mode
+192:     _searchQuery = _settlementProvider!.searchQuery ?? '';
+193:     _searchCtrl.text = _searchQuery;
+194:     if (_settlementProvider!.startDate != null) {
+195:       _startDate = DateTime.tryParse(_settlementProvider!.startDate!);
+196:     }
+197:     if (_settlementProvider!.endDate != null) {
+198:       _endDate = DateTime.tryParse(_settlementProvider!.endDate!);
+199:     }
+200: 
+201:     // ✅ Add listener to reload summary when year changes from other screens (e.g. ReportScreen)
+202:     _settlementProvider!.addListener(_onProviderChange);
+203: 
+204:     _loadDefaultReportYearAndReload();
+205: 
+206:     _refreshSub = GlobalEventBus.onRefresh.listen((_) {
+207:       if (mounted) {
+208:         _reloadSettlements();
+209:       }
+210:     });
+211:   }
+212: 
+213:   void _onProviderChange() {
+214:     if (!mounted) return;
+215: 
+216:     final prov = context.read<SettlementProvider>();
+217:     bool changed = false;
+218: 
+219:     if (_statusFilter != prov.statusFilter) {
+220:       _statusFilter = prov.statusFilter;
+221:       changed = true;
+222:     }
+223:     if (_filterMode != prov.filterMode) {
+224:       _filterMode = prov.filterMode;
+225:       changed = true;
+226:     }
+227: 
+228:     final provStart =
+229:         prov.startDate != null ? DateTime.tryParse(prov.startDate!) : null;
+230:     if (_startDate != provStart) {
+231:       _startDate = provStart;
+232:       changed = true;
+233:     }
+234: 
+235:     final provEnd =
+236:         prov.endDate != null ? DateTime.tryParse(prov.endDate!) : null;
+237:     if (_endDate != provEnd) {
+238:       _endDate = provEnd;
+239:       changed = true;
+240:     }
+241: 
+242:     final provSearch = prov.searchQuery ?? '';
+243:     if (_searchQuery != provSearch) {
+244:       _searchQuery = provSearch;
+245:       _searchCtrl.text = provSearch;
+246:       changed = true;
+247:     }
+248: 
+249:     if (changed) {
+250:       setState(() {});
+251:     }
+252: 
+253:     final auth = context.read<AuthProvider>();
+254:     if (!auth.isLoggedIn || !auth.isManager) return;
+255:     _loadAnnualSettlementSummary();
+256:   }
+257: 
+258:   @override
+259:   void dispose() {
+260:     _refreshSub?.cancel();
+261:     _searchDebounce?.cancel();
+262:     _summaryDebounce?.cancel();
+263:     _settlementProvider?.removeListener(_onProviderChange);
+264:     _listScrollController.removeListener(_handleListScroll);
+265:     _listScrollController.dispose();
+266:     _searchCtrl.dispose();
+267:     super.dispose();
+268:   }
+269: 
+270:   Future<void> _loadDefaultReportYearAndReload() async {
+271:     final sProv = context.read<SettlementProvider>();
+272:     final aProv = context.read<AdvanceProvider>();
+273:     await Future.wait([sProv.syncReportYear(), aProv.syncReportYear()]);
+274:     if (!mounted) return;
+275:     _reloadSettlements();
+276:     _loadDashboardSummary();
+277:   }
+278: 
+279:   Future<void> _loadDashboardSummary() async {
+280:     try {
+281:       final auth = context.read<AuthProvider>();
+282:       if (!auth.isLoggedIn) return;
+283:       await auth.api.getDashboardSummary();
+284:       if (!mounted) return;
+285:     } catch (e) {
+286:       debugPrint('ERROR dashboard summary: $e');
+287:     }
+288:   }
+289: 
+290:   Future<void> _loadAnnualSettlementSummary() async {
+291:     if (!mounted) return;
+292:     _summaryDebounce?.cancel();
+293:     _summaryDebounce = Timer(const Duration(milliseconds: 1000), () async {
+294:       try {
+295:         if (!mounted) return;
+296:         final auth = context.read<AuthProvider>();
+297:         if (!auth.isLoggedIn || !auth.isManager) return;
+298: 
+299:         final prov = context.read<SettlementProvider>();
+300:         if (prov.disposed) return;
+301: 
+302:         final targetYear = prov.filterYear;
+303: 
+304:         final data = await prov.getSummary(
+305:           year: targetYear,
+306:         );
+307:         if (mounted) {
+308:           setState(
+309:             () => _annualSettlementTotal =
+310:                 ((data['grand_total'] ?? 0) as num).toDouble(),
+311:           );
+312:         }
+313:       } catch (e) {
+314:         debugPrint('ERROR annual summary: $e');
+315:       }
+316:     });
+317:   }
+318: 
+319:   void updateState(VoidCallback fn) {
+320:     setState(fn);
+321:   }
+322: 
+323:   void reloadSettlements() {
+324:     if (!mounted) return;
+325:     final auth = context.read<AuthProvider>();
+326:     if (!auth.isLoggedIn) return;
+327: 
+328:     _searchDebounce?.cancel();
+329:     _searchDebounce = null;
+330:     final sProv = context.read<SettlementProvider>();
+331:     final aProv = context.read<AdvanceProvider>();
+332: 
+333:     final effectiveStartDate = _filterMode == 'range' && _startDate != null
+334:         ? DateFormat('yyyy-MM-dd').format(_startDate!)
+335:         : null;
+336:     final effectiveEndDate = _filterMode == 'range' && _endDate != null
+337:         ? DateFormat('yyyy-MM-dd').format(_endDate!)
+338:         : null;
+339: 
+340:     final targetYear = sProv.filterYear;
+341: 
+342:     sProv.loadSettlements(
+343:       status: _statusFilter,
+344:       startDate: effectiveStartDate,
+345:       endDate: effectiveEndDate,
+346:       reportYear: targetYear,
+347:       mode: _filterMode,
+348:       search: _searchQuery,
+349:     );
+350: 
+351:     // ✅ ALWAYS sync Advance to Settlement to ensure they are fully synchronized as requested
+352:     aProv.loadAdvances(
+353:       status: _statusFilter,
+354:       startDate: effectiveStartDate,
+355:       endDate: effectiveEndDate,
+356:       reportYear: targetYear,
+357:       mode: _filterMode,
+358:       search: _searchQuery,
+359:     );
+360: 
+361:     _loadAnnualSettlementSummary();
+362:   }
+363: 
+364:   void _reloadSettlements() => reloadSettlements();
+365: 
+366:   Future<void> _pickDateRange(BuildContext context) async {
+367:     final DateTimeRange? picked = await AppDateRangePicker.show(
+368:       context,
+369:       initialRange: _startDate != null && _endDate != null
+370:           ? DateTimeRange(start: _startDate!, end: _endDate!)
+371:           : null,
+372:     );
+373:     if (picked != null) {
+374:       setState(() {
+375:         _startDate = picked.start;
+376:         _endDate = picked.end;
+377:         _filterMode = 'range'; // Tambahkan ini agar label berubah
+378:       });
+379:       _reloadSettlements();
+380:     }
+381:   }
+382: 
+383:   Future<void> _exportExcel() async {
+384:     try {
+385:       final prov = context.read<SettlementProvider>();
+386:       final bytes = await prov.exportExcel(
+387:         status: _statusFilter,
+388:         startDate: _startDate != null
+389:             ? DateFormat('yyyy-MM-dd').format(_startDate!)
+390:             : null,
+391:         endDate: _endDate != null
+392:             ? DateFormat('yyyy-MM-dd').format(_endDate!)
+393:             : null,
+394:       );
+395:       final timestamp = FileHelper.formatTimestamp();
+396:       if (!mounted) return;
+397:       await FileHelper.saveAndOpenFolder(
+398:         context: context,
+399:         bytes: bytes,
+400:         filename: 'Laporan_Settlement_$timestamp.xlsx',
+401:       );
+402:     } catch (e) {
+403:       if (!mounted) return;
+404:       AppSnackbar.show('Gagal export Excel: $e', isError: true);
+405:     }
+406:   }
+407: 
+408:   Future<void> _exportPdf() async {
+409:     try {
+410:       final prov = context.read<SettlementProvider>();
+411:       final bytes = await prov.getBulkPdf(
+412:         status: _statusFilter,
+413:         startDate: _startDate != null
+414:             ? DateFormat('yyyy-MM-dd').format(_startDate!)
+415:             : null,
+416:         endDate: _endDate != null
+417:             ? DateFormat('yyyy-MM-dd').format(_endDate!)
+418:             : null,
+419:         reportYear: prov.reportYear,
+420:       );
+421:       final timestamp = FileHelper.formatTimestamp();
+422:       if (!mounted) return;
+423:       await FileHelper.saveAndOpenFile(
+424:         context: context,
+425:         bytes: bytes,
+426:         filename: 'Laporan_Settlement_$timestamp.pdf',
+427:       );
+428:     } catch (e) {
+429:       if (!mounted) return;
+430:       AppSnackbar.show('Gagal export PDF: $e', isError: true);
+431:     }
+432:   }
+433: 
+434: 
+435: 
+436: 
+437: 
+438:   @override
+439:   Widget build(BuildContext context) {
+440:     final auth = context.watch<AuthProvider>();
+441:     final prov = context.watch<SettlementProvider>();
+442:     final canShowExport = _statusFilter == 'completed';
+443:     return LayoutBuilder(
+444:       builder: (context, constraints) {
+445:         final isNarrow = constraints.maxWidth < 750;
+446:         final isVeryNarrow = constraints.maxWidth < 450;
+447:         final useCompact = constraints.maxWidth < 500;
+448:         final pagePadding = EdgeInsets.fromLTRB(
+449:           isNarrow ? 16 : 24,
+450:           useCompact ? 16 : 24,
+451:           isNarrow ? 16 : 24,
+452:           16,
+453:         );
+454:         return Column(
+455:           children: [
+456:             Expanded(
+457:               child: Stack(
+458:                 children: [
+459:                   Column(
+460:                     children: [
+461:                       Expanded(
+462:                         child: AppScrollbar(
+463:                           controller: _listScrollController,
+464:                           thumbVisibility: true,
+465:                           interactive: true,
+466:                           child: RefreshIndicator(
+467:                             onRefresh: () async => _reloadSettlements(),
+468:                             child: Builder(
+469:                               builder: (context) {
+470:                                 final sList = List<Map<String, dynamic>>.from(
+471:                                     prov.settlements);
+472:                                 // Mark as settlement for list builder compatibility if needed
+473:                                 for (var item in sList) {
+474:                                   item['is_settlement'] = true;
+475:                                 }
+476: 
+477:                                 // Sorting kronologis (terlama di atas) berdasarkan created_at atau ID
+478:                                 sList.sort((a, b) {
+479:                                   final dateA = DateTime.tryParse(
+480:                                           a['created_at']?.toString() ?? '') ??
+481:                                       DateTime(2000);
+482:                                   final dateB = DateTime.tryParse(
+483:                                           b['created_at']?.toString() ?? '') ??
+484:                                       DateTime(2000);
+485:                                   return dateA.compareTo(dateB);
+486:                                 });
+487: 
+488:                                 final topStatuses = [
+489:                                   'draft',
+490:                                   'submitted',
+491:                                   'revision',
+492:                                   'rejected',
+493:                                   'approved',
+494:                                 ];
+495:                                 final items = <dynamic>[];
+496: 
+497:                                 final displayList = sList.where((item) {
+498:                                   final type =
+499:                                       (item['settlement_type'] ?? 'single')
+500:                                           .toString()
+501:                                           .toLowerCase();
+502:                                   return type == _selectedType;
+503:                                 }).toList();
+504: 
+505:                                 final topItems = displayList
+506:                                     .where(
+507:                                       (i) => topStatuses.contains(
+508:                                         (i['status'] ?? '')
+509:                                             .toString()
+510:                                             .toLowerCase(),
+511:                                       ),
+512:                                     )
+513:                                     .toList();
+514:                                 final bottomItems = displayList
+515:                                     .where(
+516:                                       (i) => !topStatuses.contains(
+517:                                         (i['status'] ?? '')
+518:                                             .toString()
+519:                                             .toLowerCase(),
+520:                                       ),
+521:                                     )
+522:                                     .toList();
+523: 
+524:                                 if (topItems.isNotEmpty) {
+525:                                   items.addAll(topItems);
+526:                                   if (bottomItems.isNotEmpty) {
+527:                                     items.add({'is_separator': true});
+528:                                   }
+529:                                 }
+530:                                 items.addAll(bottomItems);
+531: 
+532:                                 return CustomScrollView(
+533:                                   key: const PageStorageKey('settlement_list'),
+534:                                   controller: _listScrollController,
+535:                                   physics:
+536:                                       const AlwaysScrollableScrollPhysics(),
+537:                                   slivers: [
+538:                                     SliverToBoxAdapter(
+539:                                       child: _buildScrollableSettlementHeader(
+540:                                         context,
+541:                                         auth,
+542:                                         prov,
+543:                                         isNarrow,
+544:                                         isVeryNarrow,
+545:                                         canShowExport,
+546:                                         pagePadding,
+547:                                         useCompact,
+548:                                       ),
+549:                                     ),
+550:                                     if (prov.loading &&
+551:                                         prov.settlements.isEmpty)
+552:                                       const SliverFillRemaining(
+553:                                         child: Center(
+554:                                           child: CircularProgressIndicator(
+555:                                             color: AppTheme.primary,
+556:                                           ),
+557:                                         ),
+558:                                       )
+559:                                     else if (items.isEmpty)
+560:                                       SliverFillRemaining(
+561:                                         hasScrollBody: false,
+562:                                         child: Center(
+563:                                           child: Column(
+564:                                             mainAxisSize: MainAxisSize.min,
+565:                                             children: [
+566:                                               Icon(
+567:                                                 Icons.inbox_rounded,
+568:                                                 size: 64,
+569:                                                 color: _bodyColorLocal(
+570:                                                   context,
+571:                                                 ).withValues(alpha: 0.3),
+572:                                               ),
+573:                                               const SizedBox(height: 16),
+574:                                               Text(
+575:                                                 _selectedType == 'single'
+576:                                                     ? 'Belum ada pengeluaran sendiri'
+577:                                                     : 'Belum ada pengeluaran batch',
+578:                                                 style: TextStyle(
+579:                                                   color: _bodyColorLocal(
+580:                                                     context,
+581:                                                   ),
+582:                                                 ),
+583:                                               ),
+584:                                             ],
+585:                                           ),
+586:                                         ),
+587:                                       )
+588:                                     else
+589:                                       SliverPadding(
+590:                                         padding: EdgeInsets.only(
+591:                                           left: isNarrow ? 16 : 24,
+592:                                           right: isNarrow ? 16 : 24,
+593:                                           bottom: _selectionMode
+594:                                               ? 100
+595:                                               : (isNarrow ? 16 : 24),
+596:                                         ),
+597:                                         sliver: SliverList(
+598:                                           delegate: SliverChildBuilderDelegate((
+599:                                             context,
+600:                                             i,
+601:                                           ) {
+602:                                             final item = items[i]
+603:                                                 as Map<String, dynamic>;
+604: 
+605:                                             // Handle Status Separator
+606:                                             if (item['is_separator'] == true) {
+607:                                               return Padding(
+608:                                                 padding:
+609:                                                     const EdgeInsets.symmetric(
+610:                                                   vertical: 20,
+611:                                                 ),
+612:                                                 child: Row(
+613:                                                   children: [
+614:                                                     Expanded(
+615:                                                       child: Divider(
+616:                                                         color: _dividerColor(
+617:                                                           context,
+618:                                                         ),
+619:                                                         thickness: 1,
+620:                                                       ),
+621:                                                     ),
+622:                                                     Padding(
+623:                                                       padding: const EdgeInsets
+624:                                                           .symmetric(
+625:                                                         horizontal: 16,
+626:                                                       ),
+627:                                                       child: Text(
+628:                                                         'SINGLE',
+629:                                                         style: TextStyle(
+630:                                                           fontSize: 10,
+631:                                                           fontWeight:
+632:                                                               FontWeight.w800,
+633:                                                           color:
+634:                                                               _bodyColorLocal(
+635:                                                             context,
+636:                                                           ).withValues(
+637:                                                             alpha: 0.5,
+638:                                                           ),
+639:                                                           letterSpacing: 1.2,
+640:                                                         ),
+641:                                                       ),
+642:                                                     ),
+643:                                                     Expanded(
+644:                                                       child: Divider(
+645:                                                         color: _dividerColor(
+646:                                                           context,
+647:                                                         ),
+648:                                                         thickness: 1,
+649:                                                       ),
+650:                                                     ),
+651:                                                   ],
+652:                                                 ),
+653:                                               );
+654:                                             }
+655: 
+656:                                             // Handle Type Separator (BATCH)
+657:                                             if (item['is_type_separator'] ==
+658:                                                 true) {
+659:                                               return Padding(
+660:                                                 padding: const EdgeInsets.only(
+661:                                                   top: 40,
+662:                                                   bottom: 20,
+663:                                                 ),
+664:                                                 child: Row(
+665:                                                   children: [
+666:                                                     Container(
+667:                                                       width: 4,
+668:                                                       height: 24,
+669:                                                       decoration: BoxDecoration(
+670:                                                         color: AppTheme.primary,
+671:                                                         borderRadius:
+672:                                                             BorderRadius
+673:                                                                 .circular(
+674:                                                           2,
+675:                                                         ),
+676:                                                       ),
+677:                                                     ),
+678:                                                     const SizedBox(width: 12),
+679:                                                     Text(
+680:                                                       item['label'] ?? 'BATCH',
+681:                                                       style: TextStyle(
+682:                                                         fontSize: 14,
+683:                                                         fontWeight:
+684:                                                             FontWeight.w900,
+685:                                                         color: _titleColorLocal(
+686:                                                           context,
+687:                                                         ),
+688:                                                         letterSpacing: 2.0,
+689:                                                       ),
+690:                                                     ),
+691:                                                     const SizedBox(width: 16),
+692:                                                     Expanded(
+693:                                                       child: Divider(
+694:                                                         color: _dividerColor(
+695:                                                           context,
+696:                                                         ),
+697:                                                         thickness: 2,
+698:                                                       ),
+699:                                                     ),
+700:                                                   ],
+701:                                                 ),
+702:                                               );
+703:                                             }
+704: 
+705:                                             final isSettlement =
+706:                                                 item['is_settlement'] ?? true;
+707:                                             final id = item['id'];
+708: 
+709:                                             if (isSettlement) {
+710:                                               return RepaintBoundary(
+711:                                                 child: SettlementCard(
+712:                                                   key: ValueKey(
+713:                                                     'settlement_$id',
+714:                                                   ),
+715:                                                   settlement: item,
+716:                                                   canSelect: auth.isManager ||
+717:                                                       (item['status']
+718:                                                                   ?.toString()
+719:                                                                   .toLowerCase() !=
+720:                                                               'approved' &&
+721:                                                           item['status']
+722:                                                                   ?.toString()
+723:                                                                   .toLowerCase() !=
+724:                                                               'completed'),
+725:                                                   onDelete: _selectionMode
+726:                                                       ? null
+727:                                                       : () => _deleteSettlement(
+728:                                                             id,
+729:                                                           ),
+730:                                                   selectionMode: _selectionMode,
+731:                                                   selected: _selectedItemKeys
+732:                                                       .contains('s_$id'),
+733:                                                   onSelectionChanged: (v) =>
+734:                                                       _toggleItemSelection(
+735:                                                     id,
+736:                                                     true,
+737:                                                     v,
+738:                                                   ),
+739:                                                   onTap: () => Navigator.push(
+740:                                                     context,
+741:                                                     MaterialPageRoute(
+742:                                                       builder: (_) =>
+743:                                                           SettlementDetailScreen(
+744:                                                         settlementId: id,
+745:                                                       ),
+746:                                                     ),
+747:                                                   ),
+748:                                                 ),
+749:                                               );
+750:                                             } else {
+751:                                               return RepaintBoundary(
+752:                                                 child: AdvanceCard(
+753:                                                   key: ValueKey('advance_$id'),
+754:                                                   advance: item,
+755:                                                   isManager: auth.isManager,
+756:                                                   canSelect: auth.isManager ||
+757:                                                       (item['status']
+758:                                                                   ?.toString()
+759:                                                                   .toLowerCase() !=
+760:                                                               'approved' &&
+761:                                                           item['status']
+762:                                                                   ?.toString()
+763:                                                                   .toLowerCase() !=
+764:                                                               'completed'),
+765:                                                   selectionMode: _selectionMode,
+766:                                                   selected: _selectedItemKeys
+767:                                                       .contains('a_$id'),
+768:                                                   onSelectionChanged: (v) =>
+769:                                                       _toggleItemSelection(
+770:                                                     id,
+771:                                                     false,
+772:                                                     v,
+773:                                                   ),
+774:                                                   onTap: () => Navigator.push(
+775:                                                     context,
+776:                                                     MaterialPageRoute(
+777:                                                       builder: (_) =>
+778:                                                           AdvanceDetailScreen(
+779:                                                         advanceId: id,
+780:                                                       ),
+781:                                                     ),
+782:                                                   ),
+783:                                                 ),
+784:                                               );
+785:                                             }
+786:                                           }, childCount: items.length),
+787:                                         ),
+788:                                       ),
+789:                                   ],
+790:                                 );
+791:                               },
+792:                             ),
+793:                           ),
+794:                         ),
+795:                       ),
+796:                     ],
+797:                   ),
+798:                   if (_showScrollToTop)
+799:                     Positioned(
+800:                       bottom: 24,
+801:                       right: 24,
+802:                       child: FloatingActionButton.small(
+803:                         heroTag: 'settlement_scroll_to_top',
+804:                         onPressed: scrollToTop,
+805:                         backgroundColor: _cardColor(
+806:                           context,
+807:                         ).withValues(alpha: 0.9),
+808:                         child: const Icon(
+809:                           Icons.keyboard_arrow_up_rounded,
+810:                           color: AppTheme.primary,
+811:                         ),
+812:                       ),
+813:                     ),
+814:                 ],
+815:               ),
+816:             ),
+817:           ],
+818:         );
+819:       },
+820:     );
+821:   }
+822: }

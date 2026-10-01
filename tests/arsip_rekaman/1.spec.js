@@ -1,0 +1,84 @@
+import { test, expect } from '@playwright/test';
+
+test('test', async ({ page }) => {
+  // [Auto-Fix] Berikan waktu 180 detik untuk alur pengujian panjang (>30 langkah)
+  test.setTimeout(180000);
+
+  await page.goto('http://localhost:50613/');
+  // [Auto-Fix] Aktifkan accessibility Flutter Web (500ms fast check)
+  await page.locator('flt-semantics-placeholder').click({ timeout: 500 }).catch(() => {});
+  await page.getByRole('textbox', { name: 'Username atau Email' }).click();
+  await page.getByRole('textbox', { name: 'Username atau Email' }).fill('manager1');
+  await page.getByRole('textbox', { name: 'Password' }).click();
+  await page.getByRole('textbox', { name: 'Password' }).fill('manager12345');
+  await page.locator('flutter-view').click({ position: { x: 50, y: 50 } }).catch(() => {});
+  await page.locator('flutter-view').click({ position: { x: 50, y: 50 } }).catch(() => {});
+  await page.getByRole('button', { name: 'Masuk' }).click();
+  await page.getByRole('button', { name: 'EWI Foundation Masuk Dashboard' }).click();
+  await page.getByRole('button', { name: 'BANK Kas Riil & Virtual' }).click();
+  await page.getByRole('button', { name: 'B BCA IDR No: Cash (Fisik)' }).click();
+  await page.getByRole('button', { name: 'Kelola Cash/Uang' }).click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian' }).click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian' }).fill('1.000.0000');
+  await page.getByRole('button', { name: 'Simpan' }).click();
+  await page.waitForTimeout(1000);
+  await page.locator('flutter-view').click({ position: { x: 50, y: 50 } });
+  await page.getByRole('button', { name: 'M Mandiri IDR No: Cash (Fisik)' }).click();
+  await page.getByRole('button', { name: 'Kelola Cash/Uang' }).click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian' }).click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian' }).fill('010.000.000');
+  await page.getByRole('button', { name: 'Simpan' }).click();
+  await page.waitForTimeout(1000);
+  await page.locator('flutter-view').click({ position: { x: 50, y: 50 } });
+  await page.getByRole('button', { name: 'B BRI IDR No: Cash (Fisik)' }).click();
+  await page.getByRole('button', { name: 'Kelola Cash/Uang' }).click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian' }).click({
+    modifiers: ['ControlOrMeta']
+  });
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian' }).fill('10.000.000');
+  await page.getByRole('button', { name: 'Simpan' }).click();
+  await page.waitForTimeout(1000);
+  await page.locator('flutter-view').click({ position: { x: 50, y: 50 } });
+  await page.getByRole('button', { name: 'B BNI IDR No: Cash (Fisik)' }).click();
+  await page.getByRole('button', { name: 'Kelola Cash/Uang' }).click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian' }).click({
+    modifiers: ['ControlOrMeta']
+  });
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian' }).fill('10.000.000');
+  await page.getByRole('button', { name: 'Simpan' }).click();
+  await page.waitForTimeout(1000);
+  await page.locator('flutter-view').click({ position: { x: 50, y: 50 } });
+  await page.getByRole('button', { name: 'Bank Advance' }).click();
+  await page.getByRole('button', { name: 'M Manager 1 SUPER_MANAGER' }).click();
+  await page.getByRole('button', { name: 'Kelola Advance/Uang' }).click();
+  await page.getByRole('button', { name: 'Pilih Bank Cash' }).click();
+  await page.locator('flutter-view').click();
+  await page.getByRole('button', { name: 'Tambah Sumber Dana' }).click();
+  await page.getByRole('button', { name: 'Tambah Sumber Dana' }).click();
+  await page.getByRole('button', { name: 'Tambah Sumber Dana' }).click();
+  await page.getByRole('button', { name: /Pilih Bank Cash|BCA|Mandiri|BRI|BNI/ }).first().click();
+  await page.getByRole('menuitem', { name: 'BCA Rp' }).click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian Saldo (Rp)' }).first().click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian Saldo (Rp)' }).first().fill('10.000.00');
+  await page.getByRole('button', { name: /Pilih Bank Cash|BCA|Mandiri|BRI|BNI/ }).nth(1).click();
+  await page.getByRole('menuitem', { name: 'Mandiri Rp' }).click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian Saldo (Rp)' }).nth(1).click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian Saldo (Rp)' }).nth(1).fill('1.000.000');
+  await page.getByRole('button', { name: /Pilih Bank Cash|BCA|Mandiri|BRI|BNI/ }).nth(2).click();
+  await page.getByRole('menuitem', { name: 'BRI Rp' }).click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian Saldo (Rp)' }).nth(2).click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian Saldo (Rp)' }).nth(2).fill('1.000.000');
+  await page.getByRole('button', { name: 'Pilih Bank Cash', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'BNI Rp' }).click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian Saldo (Rp)' }).nth(3).click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian Saldo (Rp)' }).nth(3).fill('200.0000');
+  await page.getByRole('button', { name: 'Simpan Penyesuaian Saldo' }).click();
+  await page.getByRole('button', { name: 'Kelola Advance/Uang' }).click();
+  await page.getByRole('button', { name: 'Pilih Bank Cash' }).click();
+  await page.getByRole('menuitem', { name: 'BNI Rp' }).click();
+  // [Fix] Klik toggle ubah ke negatif (tarik alokasi)
+  await page.getByRole('button', { name: /Ubah Positif Negatif/ }).first().click({ timeout: 2000 }).catch(() => {});
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian Saldo (Rp)' }).first().click();
+  await page.getByRole('textbox', { name: 'Jumlah Penyesuaian Saldo (Rp)' }).first().fill('100.0000');
+  await page.getByRole('button', { name: 'Simpan Penyesuaian Saldo' }).click();
+  });

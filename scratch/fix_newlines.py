@@ -1,0 +1,25 @@
+from pathlib import Path
+
+path = Path(r"D:\Aplikasi\aitool\project_menu.py")
+content = path.read_text(encoding="utf-8")
+
+# Ganti print(" \n... ") atau print(f" \n... ") yang terputus jadi print("") lalu print(...)
+content = content.replace('print(f"\n========================================================")', 'print("\\n" + "="*56)\n                print(f"   GIT STATUS (Branch Aktif: {branch})")\n                print("="*56)')
+content = content.replace('print(f"\n   GIT STATUS', 'print(f"   GIT STATUS')
+content = content.replace('print(f"\n========================================================\n   5 COMMIT TERAKHIR")', 'print("\\n" + "="*56 + "\\n   5 COMMIT TERAKHIR\\n" + "="*56)')
+content = content.replace('print(f"\n========================================================\n   5 COMMIT TERAKHIR\n========================================================")', 'print("\\n" + "="*56 + "\\n   5 COMMIT TERAKHIR\\n" + "="*56)')
+content = content.replace('input("\nTekan Enter...")', 'input("\\nTekan Enter...")')
+content = content.replace('print(f"\n[INFO] Menjalankan git pull origin {branch}...")', 'print(f"\\n[INFO] Menjalankan git pull origin {branch}...")')
+content = content.replace('print(f"\n[INFO] Branch Aktif: {branch}")', 'print(f"\\n[INFO] Branch Aktif: {branch}")')
+content = content.replace('print("\n[Status Perubahan:]")', 'print("\\n[Status Perubahan:]")')
+content = content.replace('print("\n[1/3] Menjalankan git add . ...")', 'print("\\n[1/3] Menjalankan git add . ...")')
+content = content.replace('print(f"\n[!] Push normal gagal.', 'print(f"\\n[!] Push normal gagal.')
+content = content.replace('print("\n[v] Commit & Push selesai!")', 'print("\\n[v] Commit & Push selesai!")')
+content = content.replace('print("\n=== GIT STASH / KELOLA PERUBAHAN ===")', 'print("\\n=== GIT STASH / KELOLA PERUBAHAN ===")')
+content = content.replace('print("\n=== DAFTAR BRANCH ===")', 'print("\\n=== DAFTAR BRANCH ===")')
+content = content.replace('input("\nMasukkan pesan commit', 'input("\\nMasukkan pesan commit')
+content = content.replace('input("\nKetik nama branch', 'input("\\nKetik nama branch')
+content = content.replace('input("\nTekan Enter untuk kembali ke menu...")', 'input("\\nTekan Enter untuk kembali ke menu...")')
+
+path.write_text(content, encoding="utf-8")
+print("Fix applied.")

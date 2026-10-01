@@ -1,0 +1,26 @@
+# Ruff configuration for the FastAPI and SQLAlchemy backend.
+
+exclude = [
+    ".git",
+    "venv",
+    "side",
+    "scratch",
+    "__pycache__",
+]
+
+line-length = 120
+
+[lint]
+# Ignore style rules that support this project's SQLAlchemy conventions:
+# - E402: Late imports to avoid circular dependencies
+# - E711 / E712: SQLAlchemy query comparisons (e.g., Model.is_active == True)
+ignore = [
+    "E402",
+    "E711",
+    "E712",
+]
+
+[lint.per-file-ignores]
+# __init__.py files are intentionally used for re-exports and registering SQLAlchemy models
+"__init__.py" = ["F401", "F403"]
+"models/**" = ["F401"]

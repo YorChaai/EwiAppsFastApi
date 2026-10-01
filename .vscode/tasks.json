@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "🔍 Scan All Code Problems (Ruff + Flutter)",
+            "type": "shell",
+            "command": "backend\\venv\\Scripts\\ruff.exe check backend --exclude \"venv,side,scratch\" ; cd frontend ; flutter analyze",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "⚡ Python Fast Bug Scan (Ruff)",
+            "type": "shell",
+            "command": "backend\\venv\\Scripts\\ruff.exe check backend --exclude \"venv,side,scratch\"",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        }
+    ]
+}

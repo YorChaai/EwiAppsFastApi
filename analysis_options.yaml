@@ -1,0 +1,9 @@
+analyzer:
+  exclude:
+    - 'side/**'
+    - 'backend/side/**'
+    - 'frontend/side/**'
+    - '**/side/**'
+    - '**/scratch/**'
+    - '**/backup/**'
+    - '**/*backup*/**'

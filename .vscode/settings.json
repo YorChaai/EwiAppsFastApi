@@ -1,0 +1,36 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}\\backend\\venv\\Scripts\\python.exe",
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/backend"
+    ],
+    "python.autoComplete.extraPaths": [
+        "${workspaceFolder}/backend"
+    ],
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.typeCheckingMode": "basic",
+    "dart.analysisExcludedFolders": [
+        "side",
+        "backend/side",
+        "frontend/side",
+        "backup",
+        "backend/scratch",
+        "frontend/scratch"
+    ],
+    "python.analysis.exclude": [
+        "side/**",
+        "backend/side/**",
+        "frontend/side/**",
+        "**/scratch/**",
+        "D:/__pyrefly_virtual__/**",
+        "D:/__pyrefly_virtual__"
+    ],
+    "python.analysis.ignore": [
+        "side/**",
+        "backend/side/**",
+        "frontend/side/**",
+        "**/scratch/**",
+        "D:/__pyrefly_virtual__/**",
+        "D:/__pyrefly_virtual__"
+    ]
+}
